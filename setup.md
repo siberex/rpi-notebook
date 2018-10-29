@@ -8,6 +8,8 @@
 
 4. Configure with `sudo raspi-config`
 
+5. Shutdown with `sudo halt`
+
 
 # Update packages
 
