@@ -15,9 +15,8 @@
 
 Update OS packages:
 
-	sudo apt-get update
-	sudo apt-get upgrade
-	sudo apt-get dist-upgrade
+	sudo apt update
+	sudo apt full-upgrade -y
 	
 Remove partial packages, clean the cache, remove unused dependencies:
 
