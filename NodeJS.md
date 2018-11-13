@@ -10,8 +10,7 @@ It is better because Raspbian packages are usually quite outdated.
     wget https://nodejs.org/dist/$NODEVER/node-$NODEVER-linux-$ARCH.tar.xz
 
     sudo mkdir -p /opt/nodejs
-    sudo tar -xf node-$NODEVER-linux-$ARCH.tar.xz --directory=/opt/nodejs --strip-components=1
-    sudo chown -R root:root /opt/nodejs
+    sudo tar -xf node-$NODEVER-linux-$ARCH.tar.xz --directory=/opt/nodejs --strip-components=1 --no-same-owner
 
     rm node-$NODEVER-linux-$ARCH.tar.xz
 
