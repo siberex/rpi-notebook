@@ -40,9 +40,9 @@ pass: `ubuntu`
 Update packages:
 
 ```bash
-sudo apt update
-sudo apt upgrade
-sudo apt dist-upgrade
+sudo apt update -y
+sudo apt upgrade -y
+sudo apt dist-upgrade -y
 ```
 
 [Enable swap](https://tecadmin.net/enable-swap-on-ubuntu/):
@@ -56,7 +56,6 @@ sudo swapon /swapfile
 echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
 echo 'vm.swappiness=60' | sudo tee -a /etc/sysctl.conf
 sudo sysctl -p
-
 ```
 
 Check swap:
@@ -74,7 +73,7 @@ Disable root login and password-based SSH login:
 
 2. Disable unsecure sshd options:
 
-    ```bash    
+    ```bash
     sudo vim /etc/ssh/sshd_config
     # PermitRootLogin no
     # PasswordAuthentication no
