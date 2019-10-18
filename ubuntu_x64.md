@@ -61,7 +61,7 @@ sudo sysctl -p
 
 Check swap:
 
-```shell script
+```bash
 free -h
 sudo swapon --show
 cat /proc/sys/vm/swappiness
