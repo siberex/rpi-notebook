@@ -123,6 +123,26 @@ Check `dmesg` output after reboot:
 ```
 
 
+## Set up WiFi connection
+
+```bash
+cat /etc/netplan/60-wifi.yaml
+
+network:
+    version: 2
+    wifis:
+        wlan0:
+            optional: true
+            dhcp4: true
+            nameservers:
+                addresses: [ 1.1.1.1, 1.0.0.1 ]
+            access-points:
+                "my-wifi-ssid":
+                    password: "password"
+
+```
+
+
 ## Additional info
 
 System configuration and (`arm_64bit` should be set to non-zero):
