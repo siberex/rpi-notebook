@@ -112,7 +112,6 @@ curl -L -O https://github.com/RPi-Distro/firmware-nonfree/raw/master/brcm/brcmfm
 Use `dpkg-divert` to stop firmware files being overwritten on package updates:
 
 ```bash
-# 
 sudo dpkg-divert --add --rename --divert /lib/firmware/brcm/brcmfmac43430-sdio.bin.orig /lib/firmware/brcm/brcmfmac43430-sdio.bin
 sudo dpkg-divert --add --rename --divert /lib/firmware/brcm/brcmfmac43430-sdio.clm_blob.orig /lib/firmware/brcm/brcmfmac43430-sdio.clm_blob
 sudo dpkg-divert --add --rename --divert /lib/firmware/brcm/brcmfmac43430-sdio.txt.orig /lib/firmware/brcm/brcmfmac43430-sdio.txt
@@ -120,7 +119,6 @@ sudo dpkg-divert --add --rename --divert /lib/firmware/brcm/brcmfmac43430-sdio.t
 sudo dpkg-divert --add --rename --divert /lib/firmware/brcm/brcmfmac43455-sdio.bin.orig /lib/firmware/brcm/brcmfmac43455-sdio.bin
 sudo dpkg-divert --add --rename --divert /lib/firmware/brcm/brcmfmac43455-sdio.clm_blob.orig /lib/firmware/brcm/brcmfmac43455-sdio.clm_blob
 sudo dpkg-divert --add --rename --divert /lib/firmware/brcm/brcmfmac43455-sdio.txt.orig /lib/firmware/brcm/brcmfmac43455-sdio.txt
-
 ```
 
 Copy new drivers:
