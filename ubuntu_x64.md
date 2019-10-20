@@ -94,20 +94,33 @@ Check `dmesg` output:
 [   17.874298] brcmfmac: brcmf_c_preinit_dcmds: Firmware version = wl0: Aug 29 2016 20:48:16 version 7.45.41.26 (r640327) FWID 01-4527cfab
 ```
 
-For Pi Model 3B follow this:
+Use this to obtain latest [Cypress WiFi firmware](https://github.com/RPi-Distro/firmware-nonfree/commit/4ee44af381d55bc2221cf80c1433842a48ed09e1) for Pi Model 3B:
 
 ```bash
 cd /tmp
 curl -L -O https://github.com/RPi-Distro/firmware-nonfree/raw/master/brcm/brcmfmac43430-sdio.bin
+curl -L -O https://github.com/RPi-Distro/firmware-nonfree/raw/master/brcm/brcmfmac43430-sdio.clm_blob
 curl -L -O https://github.com/RPi-Distro/firmware-nonfree/raw/master/brcm/brcmfmac43430-sdio.txt
+
+curl -L -O https://github.com/RPi-Distro/firmware-nonfree/raw/master/brcm/brcmfmac43455-sdio.bin
+curl -L -O https://github.com/RPi-Distro/firmware-nonfree/raw/master/brcm/brcmfmac43455-sdio.clm_blob
+curl -L -O https://github.com/RPi-Distro/firmware-nonfree/raw/master/brcm/brcmfmac43455-sdio.txt
 ```
 
-Use `dpkg-divert` to stop driver files being overwritten on package updates:
+*Cypress are the new owners of what used to be Broadcom’s wireless business*
+
+Use `dpkg-divert` to stop firmware files being overwritten on package updates:
 
 ```bash
 # 
 sudo dpkg-divert --add --rename --divert /lib/firmware/brcm/brcmfmac43430-sdio.bin.orig /lib/firmware/brcm/brcmfmac43430-sdio.bin
+sudo dpkg-divert --add --rename --divert /lib/firmware/brcm/brcmfmac43430-sdio.clm_blob.orig /lib/firmware/brcm/brcmfmac43430-sdio.clm_blob
 sudo dpkg-divert --add --rename --divert /lib/firmware/brcm/brcmfmac43430-sdio.txt.orig /lib/firmware/brcm/brcmfmac43430-sdio.txt
+
+sudo dpkg-divert --add --rename --divert /lib/firmware/brcm/brcmfmac43455-sdio.bin.orig /lib/firmware/brcm/brcmfmac43455-sdio.bin
+sudo dpkg-divert --add --rename --divert /lib/firmware/brcm/brcmfmac43455-sdio.clm_blob.orig /lib/firmware/brcm/brcmfmac43455-sdio.clm_blob
+sudo dpkg-divert --add --rename --divert /lib/firmware/brcm/brcmfmac43455-sdio.txt.orig /lib/firmware/brcm/brcmfmac43455-sdio.txt
+
 ```
 
 Copy new drivers:
@@ -119,7 +132,7 @@ sudo reboot
 
 Check `dmesg` output after reboot:
 ```
-[   18.109556] brcmfmac: brcmf_c_preinit_dcmds: Firmware version = wl0: Oct 23 2017 03:55:53 version 7.45.98.38 (r674442 CY) FWID 01-e58d219f
+[   18.359555] brcmfmac: brcmf_c_preinit_dcmds: Firmware version = wl0: May  2 2019 02:39:18 version 7.45.98.83 (r714225 CY) FWID 01-e539531f
 ```
 
 
@@ -139,8 +152,13 @@ network:
             access-points:
                 "my-wifi-ssid":
                     password: "password"
+                "another-wifi-ssid":
+                    password: "another-password"
 
 ```
+
+Side note: add `optional: true` to the default interface too (`/etc/netplan/50-cloud-init.yaml`),
+ to [reduce boot time](https://askubuntu.com/questions/972215/a-start-job-is-running-for-wait-for-network-to-be-configured-ubuntu-server-17-1).
 
 
 ## Additional info
