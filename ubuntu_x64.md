@@ -217,6 +217,6 @@ cat /boot/firmware/cmdline.txt
     
     ```bash
     sudo vim /etc/fstab
-    LABEL=dumpster /media/usb fuseblk defaults 0 0
+    LABEL=dumpster /media/usb auto defaults 0 0
     ```
 
