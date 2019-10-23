@@ -171,3 +171,52 @@ Kernel command line options:
 cat /boot/firmware/cmdline.txt
 ```
 
+
+## Mount exFAT file systems
+
+1. Add universe repos (open-source community-maintained packages) and install exfat-fuse:
+
+    ```bash
+    sudo add-apt-repository universe
+    sudo apt update
+    sudo apt install -y exfat-fuse exfat-utils
+    ```
+
+2. Check drive is connected:
+
+    ```bash
+    lsusb -t
+    ```
+
+    Check `dmesg` if not.
+
+3. Get list of connected drives and partitions:
+
+    ```bash
+    sudo fdisk -l
+    ls -l /dev/disk/by-id/usb*
+    lsblk
+    ```
+   
+4. Mount desired partition:
+
+    ```bash
+    sudo mkdir -p /media/usb
+    sudo mount /dev/sda2 /media/usb
+    ```
+
+5. Optionally, add mount point to `/etc/fstab` to mount on boot.
+
+    Get partition label:
+    
+    ```bash
+    sudo blkid
+    ```
+   
+    Update `/etc/fstab`:
+    
+    ```bash
+    sudo vim /etc/fstab
+    LABEL=dumpster /media/usb fuseblk defaults 0 0
+    ```
+
