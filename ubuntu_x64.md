@@ -185,8 +185,8 @@ cat /boot/firmware/cmdline.txt
 1. Add universe repos (open-source community-maintained packages) and install exfat-fuse:
 
     ```shell script
-    sudo add-apt-repository universe
-    sudo apt update
+    # sudo add-apt-repository universe
+    # sudo apt update
     sudo apt install -y exfat-fuse exfat-utils
     ```
 
@@ -210,7 +210,7 @@ cat /boot/firmware/cmdline.txt
 
     ```shell script
     sudo mkdir -p /media/usb
-    sudo mount /dev/sda2 /media/usb
+    sudo mount -t exfat /dev/sda2 /media/usb
     ```
 
 5. Optionally, add mount point to `/etc/fstab` to mount on boot.
@@ -225,6 +225,12 @@ cat /boot/firmware/cmdline.txt
     
     ```shell script
     sudo vim /etc/fstab
-    LABEL=dumpster /media/usb auto defaults 0 0
+    LABEL=dumpster /media/dumpster exfat-fuse defaults 0 0
     ```
 
+    Check is it’s actually mounting and re-mount:
+    ```shell script
+    sudo umount /dev/sda2
+    sudo mount -av
+    sudo mount -a
+    ```
