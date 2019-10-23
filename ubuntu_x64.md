@@ -31,6 +31,13 @@ sudo diskutil unmountDisk /dev/diskNUMBER
 sudo dd bs=4m if=/dev/diskNUMBER | xz > ubuntu.`date +%Y-%m-%d`.img.xz
 ```
 
+Restore with:
+
+```shell script
+diskutil list
+sudo diskutil unmountDisk /dev/diskNUMBER
+xzcat ubuntu.2019-10-20.img.xz | sudo dd bs=4m of=/dev/diskNUMBER
+```
 
 ## First boot
 
