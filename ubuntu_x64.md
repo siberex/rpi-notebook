@@ -14,7 +14,7 @@
 
     Without Etcher it can be done like this:
     
-    ```bash
+    ```shell script
     cd /tmp
     curl -L -O http://cdimage.ubuntu.com/ubuntu/releases/bionic/release/ubuntu-18.04.3-preinstalled-server-arm64+raspi3.img.xz
     diskutil list
@@ -25,7 +25,7 @@
 
 ## Backup SD card as disk image
 
-```bash
+```shell script
 diskutil list
 sudo diskutil unmountDisk /dev/diskNUMBER
 sudo dd bs=4m if=/dev/diskNUMBER | xz > ubuntu.`date +%Y-%m-%d`.img.xz
@@ -39,7 +39,7 @@ pass: `ubuntu`
 
 Update packages:
 
-```bash
+```shell script
 sudo apt update -y
 sudo apt upgrade -y
 sudo apt dist-upgrade -y
@@ -47,7 +47,7 @@ sudo apt dist-upgrade -y
 
 [Enable swap](https://tecadmin.net/enable-swap-on-ubuntu/):
 
-```bash
+```shell script
 sudo fallocate -l 2G /swapfile
 sudo chmod 600 /swapfile
 sudo mkswap /swapfile
@@ -60,7 +60,7 @@ sudo sysctl -p
 
 Check swap:
 
-```bash
+```shell script
 free -h
 sudo swapon --show
 cat /proc/sys/vm/swappiness
@@ -73,7 +73,7 @@ Disable root login and password-based SSH login:
 
 2. Disable unsecure sshd options:
 
-    ```bash
+    ```shell script
     sudo vim /etc/ssh/sshd_config
     # PermitRootLogin no
     # PasswordAuthentication no
@@ -83,7 +83,7 @@ Disable root login and password-based SSH login:
    
 3. Reload sshd:
 
-    ```bash
+    ```shell script
     sudo systemctl reload ssh
     ```
 
@@ -96,7 +96,7 @@ Check `dmesg` output:
 
 Use this to obtain latest [Cypress WiFi firmware](https://github.com/RPi-Distro/firmware-nonfree/commit/4ee44af381d55bc2221cf80c1433842a48ed09e1) for Pi Model 3B:
 
-```bash
+```shell script
 cd /tmp
 curl -L -O https://github.com/RPi-Distro/firmware-nonfree/raw/master/brcm/brcmfmac43430-sdio.bin
 curl -L -O https://github.com/RPi-Distro/firmware-nonfree/raw/master/brcm/brcmfmac43430-sdio.clm_blob
@@ -111,7 +111,7 @@ curl -L -O https://github.com/RPi-Distro/firmware-nonfree/raw/master/brcm/brcmfm
 
 Use `dpkg-divert` to stop firmware files being overwritten on package updates:
 
-```bash
+```shell script
 sudo dpkg-divert --add --rename --divert /lib/firmware/brcm/brcmfmac43430-sdio.bin.orig /lib/firmware/brcm/brcmfmac43430-sdio.bin
 sudo dpkg-divert --add --rename --divert /lib/firmware/brcm/brcmfmac43430-sdio.clm_blob.orig /lib/firmware/brcm/brcmfmac43430-sdio.clm_blob
 sudo dpkg-divert --add --rename --divert /lib/firmware/brcm/brcmfmac43430-sdio.txt.orig /lib/firmware/brcm/brcmfmac43430-sdio.txt
@@ -123,7 +123,7 @@ sudo dpkg-divert --add --rename --divert /lib/firmware/brcm/brcmfmac43455-sdio.t
 
 Copy new drivers:
 
-```bash
+```shell script
 sudo cp *sdio* /lib/firmware/brcm/
 sudo reboot
 ```
@@ -136,9 +136,11 @@ Check `dmesg` output after reboot:
 
 ## Set up WiFi connection
 
-```bash
+```shell script
 cat /etc/netplan/60-wifi.yaml
+```
 
+```yaml
 network:
     version: 2
     wifis:
@@ -152,7 +154,6 @@ network:
                     password: "password"
                 "another-wifi-ssid":
                     password: "another-password"
-
 ```
 
 Side note: add `optional: true` to the default interface too (`/etc/netplan/50-cloud-init.yaml`),
@@ -162,12 +163,12 @@ Side note: add `optional: true` to the default interface too (`/etc/netplan/50-c
 ## Additional info
 
 System configuration and (`arm_64bit` should be set to non-zero):
-```bash
+```shell script
 cat /boot/firmware/config.txt
 ```
 
 Kernel command line options:
-```bash
+```shell script
 cat /boot/firmware/cmdline.txt
 ```
 
@@ -176,7 +177,7 @@ cat /boot/firmware/cmdline.txt
 
 1. Add universe repos (open-source community-maintained packages) and install exfat-fuse:
 
-    ```bash
+    ```shell script
     sudo add-apt-repository universe
     sudo apt update
     sudo apt install -y exfat-fuse exfat-utils
@@ -184,7 +185,7 @@ cat /boot/firmware/cmdline.txt
 
 2. Check drive is connected:
 
-    ```bash
+    ```shell script
     lsusb -t
     ```
 
@@ -192,7 +193,7 @@ cat /boot/firmware/cmdline.txt
 
 3. Get list of connected drives and partitions:
 
-    ```bash
+    ```shell script
     sudo fdisk -l
     ls -l /dev/disk/by-id/usb*
     lsblk
@@ -200,7 +201,7 @@ cat /boot/firmware/cmdline.txt
    
 4. Mount desired partition:
 
-    ```bash
+    ```shell script
     sudo mkdir -p /media/usb
     sudo mount /dev/sda2 /media/usb
     ```
@@ -209,13 +210,13 @@ cat /boot/firmware/cmdline.txt
 
     Get partition label:
     
-    ```bash
+    ```shell script
     sudo blkid
     ```
    
     Update `/etc/fstab`:
     
-    ```bash
+    ```shell script
     sudo vim /etc/fstab
     LABEL=dumpster /media/usb auto defaults 0 0
     ```
