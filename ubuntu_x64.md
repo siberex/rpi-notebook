@@ -1,12 +1,23 @@
 # Ubuntu ARM64 setup for Raspberry Pi 3
 
+## OS Image
+
+Recommended way:
+
+Use [Raspberry Pi Imager](https://www.raspberrypi.org/software/)
+
+Select: Other general purpose OS → Ubuntu → Ubuntu Server 20.04 LTS 64-bit
+
+<details><summary>Manual way (not recommended)</summary>
+<p>
+
 [Official wiki](https://wiki.ubuntu.com/ARM/RaspberryPi)
 
 1. Prerequisites:
 
     - [balenaEtcher](https://www.balena.io/etcher/) or `dd` + `xzcat`.
     
-    - [Disk image](http://cdimage.ubuntu.com/ubuntu/releases/bionic/release/) from releases page.
+    - [Disk image](http://cdimage.ubuntu.com/ubuntu/releases/20.04/release/) from releases page.
     
         Preinstalled server image → Raspberry Pi 3 (64-bit ARM) preinstalled server image.
 
@@ -22,6 +33,7 @@
     xzcat ubuntu-18.04.3-preinstalled-server-arm64+raspi3.img.xz | sudo dd bs=4m of=/dev/diskNUMBER
     ```
 
+</p></details>
 
 ## Backup SD card as disk image
 
@@ -94,12 +106,17 @@ Disable root login and password-based SSH login:
     sudo systemctl reload ssh
     ```
 
-## Update WiFi driver
+## <s>Update WiFi driver</s>
+
+Not needed with the current Ubuntu.
 
 Check `dmesg` output:
 ```
 [   17.874298] brcmfmac: brcmf_c_preinit_dcmds: Firmware version = wl0: Aug 29 2016 20:48:16 version 7.45.41.26 (r640327) FWID 01-4527cfab
 ```
+
+<details><summary>Instructions to update Broadcom/Cypress driver manually</summary>
+<p>
 
 Use this to obtain latest [Cypress WiFi firmware](https://github.com/RPi-Distro/firmware-nonfree/commit/4ee44af381d55bc2221cf80c1433842a48ed09e1) for Pi Model 3B:
 
@@ -140,6 +157,7 @@ Check `dmesg` output after reboot:
 [   18.359555] brcmfmac: brcmf_c_preinit_dcmds: Firmware version = wl0: May  2 2019 02:39:18 version 7.45.98.83 (r714225 CY) FWID 01-e539531f
 ```
 
+</p></details>
 
 ## Set up WiFi connection
 
