@@ -2,13 +2,23 @@
 
 1. Download [Raspbian image](https://www.raspberrypi.org/downloads/raspbian/)
 
-2. Flush with [Etcher](https://etcher.io/)
+2. Flash with [Etcher](https://etcher.io/) or Raspberry Pi Imager
 
-3. Boot and login using `pi` username and `raspberry` password.
+3. re-insert SD card and create empty `ssh` file on the boot partition
 
-4. Configure with `sudo raspi-config`
+4. Boot
 
-5. Shutdown with `sudo halt`
+5. From the host: `ssh-copy-id pi@ip.ip.ip.ip`
+
+   Use `raspberry` password.
+   
+   Then `ssh pi@ip.ip.ip.ip`
+
+6. Configure with `sudo raspi-config`
+
+   Set locale to `en_US.UTF-8`
+
+7. Shutdown with `sudo halt`
 
 
 # Update packages
