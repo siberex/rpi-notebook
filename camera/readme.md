@@ -5,7 +5,33 @@ Option 1: [Get MotionEyeOS image](https://github.com/ccrisan/motioneyeos/wiki/In
 
 Option 2: Set up [motion and motionEye manually](https://github.com/ccrisan/motioneye/wiki/%28Install-On-Ubuntu-%2820.04-or-Newer%29)
 
-...TODO
+```bash
+sudo apt install -y ssh curl motion ffmpeg v4l-utils
+
+cd /tmp
+sudo apt install -y python2
+curl https://bootstrap.pypa.io/pip/2.7/get-pip.py --output get-pip.py
+sudo python2 get-pip.py
+
+sudo apt install -y libffi-dev libzbar-dev libzbar0
+sudo apt install -y python2-dev libssl-dev libcurl4-openssl-dev libjpeg-dev
+sudo apt install -y python-pil
+
+sudo pip2 install motioneye
+sudo mkdir -p /etc/motioneye
+sudo cp /usr/local/share/motioneye/extra/motioneye.conf.sample /etc/motioneye/motioneye.conf
+
+sudo mkdir -p /var/lib/motioneye
+
+sudo cp /usr/local/share/motioneye/extra/motioneye.systemd-unit-local /etc/systemd/system/motioneye.service
+sudo systemctl daemon-reload
+sudo systemctl enable motioneye
+sudo systemctl start motioneye
+```
+
+Browse to `http://hostname_or_ip:8765/` (Username `admin` with blank password)
+
+Add camera streams, for example `rtsp://192.168.1.200:554/cam/realmonitor?channel=1&subtype=0&unicast=true&proto=Onvif` (for Dahua)
 
 
 # ZoneMinder
