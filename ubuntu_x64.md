@@ -198,6 +198,22 @@ cat /boot/firmware/cmdline.txt
 ```
 
 
+## Userland utils (vcgencmd) from Raspbian
+
+[rPi userland utils](https://github.com/raspberrypi/userland) **ARE USELESS**!
+
+DO NOT install them with `sudo apt install -y libraspberrypi-bin`
+
+`vcgencmd measure_temp` WILL NOT work on Ubuntu aarch64 (you wil get `VCHI initialization failed`).
+
+If you want to get CPU info, use this (and `lscpu`):
+
+```bash
+printf "CPU Temp: %.2f°C\n" `echo "$(</sys/class/thermal/thermal_zone0/temp)/1000" | bc -l`
+echo "CPU Freq:" $(($(cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq)/1000))MHz
+```
+
+
 ## Mount exFAT file systems
 
 1. Add universe repos (open-source community-maintained packages) and install exfat-fuse:
