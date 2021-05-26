@@ -22,12 +22,19 @@ sudo apt update
 sudo apt install -y tasksel
 sudo tasksel install lamp-server
 
-sudo vim /etc/mysql/mysql.conf.d/mysqld.cnf
-# In the [mysqld] section add the following
-# sql_mode = NO_ENGINE_SUBSTITUTION
-
-sudo systemctl restart mysql
 sudo apt install zoneminder
 
-# ...
+sudo chmod 740 /etc/zm/zm.conf
+sudo chown root:www-data /etc/zm/zm.conf
+sudo chown -R www-data:www-data /usr/share/zoneminder/
+
+a2enmod cgi expires headers rewrite
+a2enconf zoneminder
+
+sudo systemctl enable zoneminder
+sudo systemctl start zoneminder
+
+sudo systemctl reload apache2
 ```
+
+Browse at `http://hostname_or_ip/zm`
