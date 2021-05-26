@@ -12,6 +12,8 @@ Option 2: Set up [motion and motionEye manually](https://github.com/ccrisan/moti
 
 Option 1: [Get Raspbian Lite image](https://zmrepo.zoneminder.com/)
 
+Tip: [Increase GPU mem](https://wiki.zoneminder.com/Single_Board_Computers#GPU_Memory) to improve performance
+
 Option 2: [Install on Ubuntu aarch64](https://zoneminder.readthedocs.io/en/latest/installationguide/ubuntu.html#easy-way-ubuntu-18-04-bionic)
 
 ```bash
