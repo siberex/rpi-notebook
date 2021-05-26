@@ -3,7 +3,7 @@
 
 Option 1: [Get MotionEyeOS image](https://github.com/ccrisan/motioneyeos/wiki/Installation)
 
-Option 2: Set up motion and motionEye manually
+Option 2: Set up [motion and motionEye manually](https://github.com/ccrisan/motioneye/wiki/%28Install-On-Ubuntu-%2820.04-or-Newer%29)
 
 ...TODO
 
@@ -37,4 +37,4 @@ sudo systemctl start zoneminder
 sudo systemctl reload apache2
 ```
 
-Browse at `http://hostname_or_ip/zm`
+Browse to `http://hostname_or_ip/zm`
