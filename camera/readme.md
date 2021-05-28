@@ -1,6 +1,18 @@
-## Set up Raspberry Pi as an IP-camera monitoring or recording (DVR / NVR) server
+# Set up Raspberry Pi as an IP-camera monitoring or recording (DVR / NVR) server
 
 Check out [@jantman](https://github.com/jantman) [blog post](https://blog.jasonantman.com/2018/05/linux-surveillance-camera-software-evaluation/)
+
+
+## Tips
+
+Ffprobe camera streams to check if camera is available (example for Dahua IPC rtsp address):
+
+```bash
+USERNAME=admin
+PASSWORD=*****
+ffprobe -v quiet -print_format json -show_format "rtsp://${USERNAME}:${PASSWORD}@192.168.1.201:554/cam/realmonitor?channel=1&subtype=0&unicast=true&proto=Onvif"
+ffprobe -v quiet -print_format json -show_streams "rtsp://${USERNAME}:${PASSWORD}@192.168.1.201:554/cam/realmonitor?channel=1&subtype=0&unicast=true&proto=Onvif"
+```
 
 
 ## [Motion](https://github.com/Motion-Project/motion) + [MotionEye](https://github.com/ccrisan/motioneye)
@@ -76,9 +88,7 @@ Browse to `http://hostname_or_ip/zm`
 
 Check out [@stephen-mw](https://github.com/stephen-mw) [blog post](https://www.heystephenwood.com/2018/08/shinobi-on-raspberry-pi-3-b.html)
 
-[Ubuntu guide](https://shinobi.video/docs/start#content-ubuntu--the-easier-way)
-
-Quick recap:
+[Ubuntu guide](https://shinobi.video/docs/start#content-ubuntu--the-easier-way) quick recap:
 
 1. [Install Node.js](./NodeJS.md) — modern version [is required](https://hub.shinobi.video/articles/view/sIuhLW2A0E8A7K3)
 
