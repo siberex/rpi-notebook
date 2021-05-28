@@ -1,4 +1,4 @@
-## Set up Raspberry Pi as an IP camera monitoring recording (DVR / NVR) server
+## Set up Raspberry Pi as an IP-camera monitoring or recording (DVR / NVR) server
 
 Check out [@jantman](https://github.com/jantman) [blog post](https://blog.jasonantman.com/2018/05/linux-surveillance-camera-software-evaluation/)
 
