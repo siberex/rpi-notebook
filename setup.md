@@ -21,6 +21,19 @@
 7. Shutdown with `sudo halt`
 
 
+# Increase swap
+
+```bash
+sudo dphys-swapfile swapoff
+
+# Set CONF_SWAPSIZE=1024
+sudo vim /etc/dphys-swapfile
+
+sudo dphys-swapfile setup
+sudo dphys-swapfile swapon
+```
+
+
 # Update packages
 
 Update OS packages:
