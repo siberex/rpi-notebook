@@ -25,7 +25,7 @@ Select: Other general purpose OS → Ubuntu → Ubuntu Server 20.04 LTS 64-bit
 
     Without Etcher it can be done like this:
     
-    ```shell script
+    ```bash
     cd /tmp
     curl -L -O http://cdimage.ubuntu.com/ubuntu/releases/bionic/release/ubuntu-18.04.3-preinstalled-server-arm64+raspi3.img.xz
     diskutil list
@@ -37,7 +37,7 @@ Select: Other general purpose OS → Ubuntu → Ubuntu Server 20.04 LTS 64-bit
 
 ## Backup SD card as disk image
 
-```shell script
+```bash
 diskutil list
 sudo diskutil unmountDisk /dev/diskNUMBER
 sudo dd bs=4m if=/dev/diskNUMBER | xz > ubuntu.`date +%Y-%m-%d`.img.xz
@@ -45,7 +45,7 @@ sudo dd bs=4m if=/dev/diskNUMBER | xz > ubuntu.`date +%Y-%m-%d`.img.xz
 
 Restore with:
 
-```shell script
+```bash
 diskutil list
 sudo diskutil unmountDisk /dev/diskNUMBER
 xzcat ubuntu.2019-10-20.img.xz | sudo dd bs=4m of=/dev/diskNUMBER
@@ -58,15 +58,15 @@ pass: `ubuntu`
 
 Update packages:
 
-```shell script
+```bash
 sudo apt update -y
 sudo apt upgrade -y
 sudo apt dist-upgrade -y
 ```
 
-[Enable swap](https://tecadmin.net/enable-swap-on-ubuntu/):
+## [Enable swap](https://tecadmin.net/enable-swap-on-ubuntu/):
 
-```shell script
+```bash
 sudo fallocate -l 2G /swapfile
 sudo chmod 600 /swapfile
 sudo mkswap /swapfile
@@ -79,20 +79,20 @@ sudo sysctl -p
 
 Check swap:
 
-```shell script
+```bash
 free -h
 sudo swapon --show
 cat /proc/sys/vm/swappiness
 ```
 
 
-Disable root login and password-based SSH login:
+## Disable root login and password-based SSH login:
 
 1. Add ssh key(s) to `~/.ssh/authorized_keys`
 
 2. Disable unsecure sshd options:
 
-    ```shell script
+    ```bash
     sudo vim /etc/ssh/sshd_config
     # PermitRootLogin no
     # PasswordAuthentication no
@@ -102,7 +102,7 @@ Disable root login and password-based SSH login:
    
 3. Reload sshd:
 
-    ```shell script
+    ```bash
     sudo systemctl reload ssh
     ```
 
@@ -161,7 +161,7 @@ Check `dmesg` output after reboot:
 
 ## Set up WiFi connection
 
-```shell script
+```bash
 cat /etc/netplan/60-wifi.yaml
 ```
 
@@ -188,12 +188,14 @@ Side note: add `optional: true` to the default interface too (`/etc/netplan/50-c
 ## Additional info
 
 System configuration and (`arm_64bit` should be set to non-zero):
-```shell script
+
+```bash
 cat /boot/firmware/config.txt
 ```
 
 Kernel command line options:
-```shell script
+
+```bash
 cat /boot/firmware/cmdline.txt
 ```
 
@@ -218,7 +220,7 @@ echo "CPU Freq:" $(($(cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq)
 
 1. Add universe repos (open-source community-maintained packages) and install exfat-fuse:
 
-    ```shell script
+    ```bash
     # sudo add-apt-repository universe
     # sudo apt update
     sudo apt install -y exfat-fuse exfat-utils
@@ -226,7 +228,7 @@ echo "CPU Freq:" $(($(cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq)
 
 2. Check drive is connected:
 
-    ```shell script
+    ```bash
     lsusb -t
     ```
 
@@ -234,7 +236,7 @@ echo "CPU Freq:" $(($(cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq)
 
 3. Get list of connected drives and partitions:
 
-    ```shell script
+    ```bash
     sudo fdisk -l
     ls -l /dev/disk/by-id/usb*
     lsblk
@@ -242,7 +244,7 @@ echo "CPU Freq:" $(($(cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq)
    
 4. Mount desired partition:
 
-    ```shell script
+    ```bash
     sudo mkdir -p /media/usb
     sudo mount -t exfat /dev/sda2 /media/usb
     ```
@@ -251,19 +253,19 @@ echo "CPU Freq:" $(($(cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq)
 
     Get partition label:
     
-    ```shell script
+    ```bash
     sudo blkid
     ```
    
     Update `/etc/fstab`:
     
-    ```shell script
+    ```bash
     sudo vim /etc/fstab
     LABEL=dumpster /media/dumpster exfat-fuse defaults 0 0
     ```
 
     Check is it’s actually mounting and re-mount:
-    ```shell script
+    ```bash
     sudo umount /dev/sda2
     sudo mount -av
     sudo mount -a
