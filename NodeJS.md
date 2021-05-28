@@ -47,3 +47,10 @@ make -j4
 
 sudo make install
 ```
+
+# Update npm
+
+```bash
+sudo npm i -g npm
+sudo npm i -g yarn
+```
