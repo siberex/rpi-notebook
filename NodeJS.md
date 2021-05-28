@@ -20,7 +20,13 @@ It is better because Raspbian packages are usually quite outdated.
 
 # Compile Node.js from source
 
-Ubuntu or Raspbian:
+1. Increase swap
+
+    - [Ubuntu](../ubuntu_x64.md#enable-swap)
+    
+    - [Raspbian](../setup.md#increase-swap)
+
+2.
 
 ```bash
 sudo apt install -y python3 g++ make git 
@@ -33,7 +39,10 @@ cd node
 git checkout v14.17.0
 ./configure
 
-# This will take A LOT of time to compile on Raspberry hardware, use `screen -S nodebuild`
+# Note: This will take A LOT of time to compile on Raspberry hardware
+# Don’t forget to increase swap first!
+
+# screen -S nodebuild
 make -j4
 
 sudo make install
