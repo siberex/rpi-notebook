@@ -1,5 +1,9 @@
+## Set up Raspberry Pi as an IP camera monitoring recording (DVR / NVR) server
 
-# Motion + MotionEye
+Check out [@jantman](https://github.com/jantman) [blog post](https://blog.jasonantman.com/2018/05/linux-surveillance-camera-software-evaluation/)
+
+
+## [Motion](https://github.com/Motion-Project/motion) + [MotionEye](https://github.com/ccrisan/motioneye)
 
 Option 1: [Get MotionEyeOS image](https://github.com/ccrisan/motioneyeos/wiki/Installation)
 
@@ -34,7 +38,7 @@ Browse to `http://hostname_or_ip:8765/` (Username `admin` with blank password)
 Add camera streams, for example `rtsp://192.168.1.200:554/cam/realmonitor?channel=1&subtype=0&unicast=true&proto=Onvif` (for Dahua)
 
 
-# ZoneMinder
+# [ZoneMinder](https://github.com/ZoneMinder/zoneminder)
 
 Option 1: [Get Raspbian Lite image](https://zmrepo.zoneminder.com/)
 
@@ -66,3 +70,38 @@ sudo systemctl reload apache2
 ```
 
 Browse to `http://hostname_or_ip/zm`
+
+
+## [Shinobi](https://gitlab.com/Shinobi-Systems/Shinobi)
+
+Check out [@stephen-mw](https://github.com/stephen-mw) [blog post](https://www.heystephenwood.com/2018/08/shinobi-on-raspberry-pi-3-b.html)
+
+[Ubuntu guide](https://shinobi.video/docs/start#content-ubuntu--the-easier-way)
+
+Quick recap:
+
+1. [Install Node.js](./NodeJS.md) — modern version [is required](https://hub.shinobi.video/articles/view/sIuhLW2A0E8A7K3)
+
+2.
+
+```bash
+sudo apt install -y ffmpeg git
+sudo apt install -y mariadb-server
+
+sudo mysql_secure_installation
+
+# optional:
+# sudo npm i -g npm
+sudo npm i -g pm2
+
+git clone https://gitlab.com/Shinobi-Systems/Shinobi.git
+cd Shinobi
+chmod +x INSTALL/ubuntu.sh
+sudo INSTALL/ubuntu.sh
+```
+
+3. Browse to `http://ip.ip.ip.ip:8080/super` (`admin@shinobi.video` / `admin`) to add first user
+
+4. Browse to `http://ip.ip.ip.ip:8080/` and log in with added user credentials
+
+
