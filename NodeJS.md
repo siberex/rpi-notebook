@@ -22,9 +22,9 @@ It is better because Raspbian packages are usually quite outdated.
 
 1. Increase swap
 
-    - [Ubuntu](../ubuntu_x64.md#enable-swap)
+    - [Ubuntu](./ubuntu_x64.md#enable-swap)
     
-    - [Raspbian](../setup.md#increase-swap)
+    - [Raspbian](./setup.md#increase-swap)
 
 2.
 
