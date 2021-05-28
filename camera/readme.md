@@ -90,7 +90,7 @@ Check out [@stephen-mw](https://github.com/stephen-mw) [blog post](https://www.h
 
 [Ubuntu guide](https://shinobi.video/docs/start#content-ubuntu--the-easier-way) quick recap:
 
-1. [Install Node.js](./NodeJS.md) — modern version [is required](https://hub.shinobi.video/articles/view/sIuhLW2A0E8A7K3)
+1. [Install Node.js](../NodeJS.md) — modern version [is required](https://hub.shinobi.video/articles/view/sIuhLW2A0E8A7K3)
 
 2.
 
