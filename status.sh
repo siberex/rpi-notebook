@@ -2,7 +2,7 @@
 
 # watch -n 1 -- ./status.sh
 
-echo "$(date) @ $(hostname)"
+printf '%(%Y-%m-%d %H:%M:%S)T\n' -1
 
 # See also: https://www.elinux.org/RPI_vcgencmd_usage
 
