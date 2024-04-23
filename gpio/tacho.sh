@@ -1,4 +1,4 @@
 #!/bin/bash
 
 gcc -o tacho tacho.c -lwiringPi
-sudo ./tacho
+WIRINGPI_DEBUG=1 ./tacho

@@ -48,19 +48,30 @@ static void isrInterruptHandler (void) {
  */
 int main(void)
 {
+    // GPIO 6, physical 31, wPi 22
+    // const int IRQpin = 22;
+
+    // GPIO 23, physical 16, wPi 4
+    const int IRQpin = 4;
+
     int count = 0;
     globalCounter = 0;
 
     // Init with wPi numbering scheme
     wiringPiSetup();
 
-    // GPIO 6, physical 31, wPi 22
-    //wiringPiISR(22, INT_EDGE_FALLING, &isrInterruptHandler);
+    pinMode(IRQpin, INPUT);
 
-    // GPIO 23, physical 16, wPi 4
-    wiringPiISR(4, INT_EDGE_FALLING, &isrInterruptHandler);
+    // Pull-up mode is required
+    pullUpDnControl(IRQpin, PUD_UP);
+
+    // Useful doc in nodejs bindings:
+    // https://github.com/WiringPi/WiringPi-Node/blob/master/DOCUMENTATION.md#wiringpiisrpin-edgetype-callback
+    wiringPiISR(IRQpin, INT_EDGE_FALLING, &isrInterruptHandler);
 
     delay(1000);
+
+    wiringPiISRStop(IRQpin);
 
     // Tacho signal produces two pulses per revolution
     count = globalCounter / 2;
