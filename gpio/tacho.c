@@ -49,10 +49,10 @@ static void isrInterruptHandler (void) {
 int main(void)
 {
     // GPIO 6, physical 31, wPi 22
-    // const int IRQpin = 22;
+    const int IRQpin = 22;
 
     // GPIO 23, physical 16, wPi 4
-    const int IRQpin = 4;
+    // const int IRQpin = 4;
 
     int count = 0;
     globalCounter = 0;
@@ -69,6 +69,8 @@ int main(void)
     // https://github.com/WiringPi/WiringPi-Node/blob/master/DOCUMENTATION.md#wiringpiisrpin-edgetype-callback
     wiringPiISR(IRQpin, INT_EDGE_FALLING, &isrInterruptHandler);
 
+    // 1 second sample - could be be insufficient for lower fan speeds,
+    // and will produce flaky results: for example, 2 revolutions per second will return 180 rpm
     delay(1000);
 
     wiringPiISRStop(IRQpin);
