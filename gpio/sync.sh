@@ -1,4 +1,5 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -euo pipefail
 
 BASEDIR="$( cd "$(dirname "$0")" ; pwd -P )"
 

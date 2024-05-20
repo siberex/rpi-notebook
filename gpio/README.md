@@ -2,6 +2,23 @@
 
 List of libraries, tools and ways to access Raspberry Pi [GPIO](https://pinout.xyz/).
 
+## [Enable hardware PWM](https://github.com/raspberrypi/linux/blob/04c8e47067d4873c584395e5cb260b4f170a99ea/arch/arm/boot/dts/overlays/README#L925) devicetree overlay
+
+tldr: Edit `/boot/config.txt` or `/boot/firmware/config.txt` (since Pi OS 12 Bookworm):
+
+```ini
+dtoverlay=pwm,pin=12,func=4
+```
+
+Good description of all modes: https://github.com/dotnet/iot/blob/main/Documentation/raspi-pwm.md#enabling-hardware-pwm
+
+Access from shell: https://developer.technexion.com/docs/using-pwm-from-a-linux-shell
+
+Example: https://raspberrypi.stackexchange.com/a/136033/162424
+
+Note: The GPIO sysfs interface and PWM sysfs interface are two different subsystems. The GPIO one is deprecated whilst the PWM one isn't.
+
+
 ## Generic info
 
 [Sysfs is deprecated](https://forums.raspberrypi.com/viewtopic.php?t=343514) since around late 2022.
@@ -46,6 +63,17 @@ gcc -o gpiovirtbuf rpi3-gpiovirtbuf.c
 
 [gpiod_line_request_wait_edge_events example](https://github.com/pikvm/kvmd-fan/blob/48b2e8b158d425d2d3354fcd258236afdbb4c0a0/src/fan.c#L169)
 
+[Watch multiple line values example](https://git.kernel.org/pub/scm/libs/libgpiod/libgpiod.git/tree/examples/watch_multiple_line_values.c)
+
+[GH mirror](https://github.com/brgl/libgpiod)
+
+
+## [lgpio](https://github.com/joan2937/lg)
+
+Lib to control GPIO and access hw PWM.
+
+Also provide daemon interface to control GPIO remotely or to assign multiple consumers to a single GPIO pin.
+
 
 ## [WiringPi](https://github.com/WiringPi/WiringPi)
 
@@ -63,6 +91,16 @@ sudo apt install ./wiringpi_3.2_arm64.deb
 
 gpio readall
 ```
+
+Abandoned by original author. Not actively maintained.
+
+[Uses deprecated sysfs](https://github.com/WiringPi/WiringPi/issues/186) for GPIO access and not thread-safe.
+
+`wiringPiISR` are actually fd event polling and not interrupt handling.
+
+Use libgpio or lgpio for GPIO access instead of wPi.
+
+wPi Uses memory registers to access PWM (which is good), but do not support rPi5 (with its new RP1 peripherials chip).
 
 
 ### Examples
@@ -105,7 +143,17 @@ The BCM2835 PWM clock is [derived from a 19.2MHz clock](https://github.com/ondre
 
 [BCM2835 PWM clock dividers](https://github.com/ondrej1024/shtlib/blob/master/bcm2835.h#L1027)
 
+Get actual clock speed (rPi3: 19.2 MHz, rPi4: 54 MHz):
+
+```bash
+cat /sys/kernel/debug/clk/osc/clk_rate
+```
+
 rPi average output of the PWM channel is determined by the ratio of DATA/RANGE for that channel.
+
+See also: https://www.kernel.org/doc/Documentation/pwm.txt
+
+See also: https://github.com/agspoon/kvmd-fan/blob/16a8bf269848004a8f71955008fd06fdc84edcff/src/fan.c#L49
 
 Quick example with wPi CLI:
 

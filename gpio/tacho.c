@@ -67,7 +67,17 @@ int main(void)
 
     // Useful doc in nodejs bindings:
     // https://github.com/WiringPi/WiringPi-Node/blob/master/DOCUMENTATION.md#wiringpiisrpin-edgetype-callback
+    
+    // NOT thread-safe!
+    // Note: It is not setting an actual interrupt handler, but instead uses fd poll event handler under the hood:
+    // https://github.com/WiringPi/WiringPi/blob/8960cc91b911db8ec0c272781edf34b8aedb60d9/wiringPi/wiringPi.c#L2338
     wiringPiISR(IRQpin, INT_EDGE_FALLING, &isrInterruptHandler);
+
+    // Note: WiringPi is using deprecated sysfs for GPIO (instead of libgpio),
+    // so this is NOT portable and will not work in modern linux kernels:
+    // gpio: Unable to open GPIO direction interface for pin 6: No such file or directory
+    // wiringPiISR: unable to open /sys/class/gpio/gpio6/value: No such file or directory
+    // More info: https://github.com/WiringPi/WiringPi/issues/186
 
     // 1 second sample - could be be insufficient for lower fan speeds,
     // and will produce flaky results: for example, 2 revolutions per second will return 180 rpm
