@@ -3,9 +3,9 @@ set -euo pipefail
 
 API_BASEURL="https://api.cloudflare.com/client/v4"
 
-CF_TOKEN="$(sed -e 's#.*= \(\)#\1#' < ~/.cloudflare.auth)"
+CF_TOKEN="$(cut -d '=' -f2 < /var/lib/kvmd/pst/data/certbot/runroot/.cloudflare.auth | xargs)"
 INTERNAL_IP="$(tailscale ip -4)"
-HOSTNAME="$(grep 'host: .*' ~/meta.yaml | sed -e 's#.*: \(\)#\1#')"
+HOSTNAME="$(grep 'host: .*' /etc/kvmd/meta.yaml | cut -d ':' -f2 | xargs)"
 ZONE_NAME="$(echo "$HOSTNAME" | rev | cut -d '.' -f1,2 | rev)"
 
 ZONE_ID_RESULT=$(curl --silent --request GET \
