@@ -1,3 +1,34 @@
+# Network list
+
+```bash
+# Active connection profiles
+ls -la /etc/NetworkManager/system-connections/
+nmcli -p con show
+nmcli connection show
+
+# Device details
+nmcli -p -f general,wifi-properties device show wlan0
+
+# Active SSID info
+nmcli device wifi list
+iw dev wlan0 link
+
+# Routes
+ip route
+
+# Change the route metric
+sudo nmcli connection modify [id | name] ipv4.route-metric 123
+
+# Disallow installing any default routes
+sudo nmcli connection modify [id | name] ipv4.never-default yes ipv6.never-default yes
+
+# Set static address
+nmcli con mod eth0 ipv4.addresses 192.168.2.20/24
+nmcli con mod eth0 ipv4.gateway 192.168.2.1
+nmcli con mod eth0 ipv4.dns 8.8.8.8
+```
+
+
 # Unicode SSIDs convertion
 
 Convert Unicode SSID to hex representation:
