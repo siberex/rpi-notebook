@@ -70,9 +70,19 @@ gcc -o gpiovirtbuf rpi3-gpiovirtbuf.c
 
 ## [lgpio](https://github.com/joan2937/lg)
 
-Lib to control GPIO and access hw PWM.
+Lib to control GPIO.
 
 Also provide daemon interface to control GPIO remotely or to assign multiple consumers to a single GPIO pin.
+
+## [pigpio](https://github.com/joan2937/pigpio)
+
+Lib implementing hardware and software PWM outputs and GPIO inputs with callbacks.
+
+Allows to [set clock source](https://github.com/joan2937/pigpio/blob/c33738a320a3e28824af7807edafda440952c05d/pigpio.c#L7874) for hw PWM registers.
+
+Looks like abandoned though.
+
+Not compatible with [rPi5](https://github.com/joan2937/pigpio/issues/589), a lot of dangling PRs and issues.
 
 
 ## [WiringPi](https://github.com/WiringPi/WiringPi)
