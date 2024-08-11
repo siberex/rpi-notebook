@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "*.bazelrc": "shellscript",
+        "BUILD": "starlark",
+        "*.log": "vt100",
+        "*.h": "c"
+    }
+}
