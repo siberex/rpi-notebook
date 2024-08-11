@@ -18,6 +18,7 @@ Example: https://raspberrypi.stackexchange.com/a/136033/162424
 
 Note: The GPIO sysfs interface and PWM sysfs interface are two different subsystems. The GPIO one is deprecated whilst the PWM one isn't.
 
+Note: DO NOT use `bcm_host_get_peripheral_address()` from `bcm_host.h` (libraspberrypi-dev headers) for getting DMA base address for mmap. It is [not universal](https://github.com/raspberrypi/documentation/issues/3350) and broken on rPi5.
 
 ## Generic info
 
