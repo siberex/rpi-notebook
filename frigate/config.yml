@@ -18,30 +18,21 @@ go2rtc:
     cam1_main:
       # Stream which supports video & aac audio. This is only supported for rtsp streams, http must use ffmpeg
       - rtsp://admin:{FRIGATE_RTSP_PASSWORD}@10.0.0.2:554/Preview_01_main
+      # Copy of the stream which transcodes audio to the missing codec
+      - "ffmpeg:cam1_main#audio=opus"
     cam1_sub:
       - rtsp://admin:{FRIGATE_RTSP_PASSWORD}@10.0.0.2:554/Preview_01_sub
+      - "ffmpeg:cam1_sub#audio=opus"
   webrtc:
     candidates:
-      # tailscale ip
-      - 100.104.210.102:8555
+      # Bind specific ip for WebRTC
+      - "{FRIGATE_IP_WEBRTC}:8555"
       - stun:8555
 
 cameras:
   cam1:
     enabled: True
 
-    # ffmpeg:
-    #   inputs:
-    #     - path: rtsp://admin:{FRIGATE_RTSP_PASSWORD}@10.0.0.2:554/Preview_01_main
-    #       input_args: preset-rtsp-restream
-    #       roles:
-    #         - record
-    #     - path: rtsp://admin:{FRIGATE_RTSP_PASSWORD}@10.0.0.2:554/Preview_01_sub
-    #       input_args: preset-rtsp-restream
-    #       roles:
-    #         - detect
-    #         - audio
-    
     ffmpeg:
       output_args:
         record: preset-record-generic-audio-copy
@@ -55,12 +46,8 @@ cameras:
           roles:
             - detect
             - audio
-
-    # onvif:
-    #   host: 10.0.0.2
-    #   port: 8000
-    #   user: admin
-    #   password: "{FRIGATE_RTSP_PASSWORD}"
+    live:
+      stream_name: cam1_sub
 
     detect:
       enabled: True
@@ -80,6 +67,6 @@ cameras:
     snapshots:
       enabled: True
 
-    audio:
-      enabled: True
-      min_volume: 1000
+    # audio:
+    #   enabled: True
+    #   min_volume: 1000
