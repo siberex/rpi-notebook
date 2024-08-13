@@ -9,52 +9,52 @@ detectors:
     type: edgetpu
     device: pci:1
 
-# go2rtc:
-#   rtsp:
-#     default_query: "mp4"
-#     username: "admin"
-#     password: "{FRIGATE_RESTREAM_PASSWORD}"
-#   streams:
-#     cam1_main:
-#       # Stream which supports video & aac audio. This is only supported for rtsp streams, http must use ffmpeg
-#       - rtsp://admin:{FRIGATE_RTSP_PASSWORD}@10.0.0.2:554/Preview_01_main
-#     cam1_sub:
-#       - rtsp://admin:{FRIGATE_RTSP_PASSWORD}@10.0.0.2:554/Preview_01_sub
-#   webrtc:
-#     candidates:
-#       # tailscale ip
-#       - 100.104.210.102:8555
-#       - stun:8555
+go2rtc:
+  rtsp:
+    default_query: "mp4"
+    username: "admin"
+    password: "{FRIGATE_RESTREAM_PASSWORD}"
+  streams:
+    cam1_main:
+      # Stream which supports video & aac audio. This is only supported for rtsp streams, http must use ffmpeg
+      - rtsp://admin:{FRIGATE_RTSP_PASSWORD}@10.0.0.2:554/Preview_01_main
+    cam1_sub:
+      - rtsp://admin:{FRIGATE_RTSP_PASSWORD}@10.0.0.2:554/Preview_01_sub
+  webrtc:
+    candidates:
+      # tailscale ip
+      - 100.104.210.102:8555
+      - stun:8555
 
 cameras:
   cam1:
     enabled: True
 
-    ffmpeg:
-      inputs:
-        - path: rtsp://admin:{FRIGATE_RTSP_PASSWORD}@10.0.0.2:554/Preview_01_main
-          input_args: preset-rtsp-restream
-          roles:
-            - record
-        - path: rtsp://admin:{FRIGATE_RTSP_PASSWORD}@10.0.0.2:554/Preview_01_sub
-          input_args: preset-rtsp-restream
-          roles:
-            - detect
-            - audio
-    
     # ffmpeg:
-    #   output_args:
-    #     record: preset-record-generic-audio-copy
     #   inputs:
-    #     - path: rtsp://127.0.0.1:8554/cam1_main
+    #     - path: rtsp://admin:{FRIGATE_RTSP_PASSWORD}@10.0.0.2:554/Preview_01_main
     #       input_args: preset-rtsp-restream
     #       roles:
     #         - record
-    #     - path: rtsp://127.0.0.1:8554/cam1_sub
+    #     - path: rtsp://admin:{FRIGATE_RTSP_PASSWORD}@10.0.0.2:554/Preview_01_sub
     #       input_args: preset-rtsp-restream
     #       roles:
     #         - detect
     #         - audio
+    
+    ffmpeg:
+      output_args:
+        record: preset-record-generic-audio-copy
+      inputs:
+        - path: rtsp://127.0.0.1:8554/cam1_main
+          input_args: preset-rtsp-restream
+          roles:
+            - record
+        - path: rtsp://127.0.0.1:8554/cam1_sub
+          input_args: preset-rtsp-restream
+          roles:
+            - detect
+            - audio
 
     # onvif:
     #   host: 10.0.0.2
@@ -64,7 +64,22 @@ cameras:
 
     detect:
       enabled: True
+    objects:
+      track:
+        - person
+        - car
+        - bicycle
+        - motorbike
+        - bus
+        - truck
+        - cat
+        - dog
+
     record:
       enabled: True
     snapshots:
       enabled: True
+
+    audio:
+      enabled: True
+      min_volume: 1000
