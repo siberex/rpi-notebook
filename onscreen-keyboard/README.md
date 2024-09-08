@@ -12,10 +12,8 @@ sudo apt install wvkbd
 Install toggle script:
 
 ```bash
-mkdir -p /home/pi/onscreen-keyboard/
-cp toggle-wvkbd.sh /home/pi/onscreen-keyboard/
-chmod +x /home/pi/onscreen-keyboard/toggle-wvkbd.sh
-sudo cp keyboard.png /usr/share/icons/hicolor/512x512/apps/
+cp toggle-wvkbd.sh /home/pi/
+chmod +x /home/pi/toggle-wvkbd.sh
 sudo cp wvkbd.desktop /usr/share/applications/
 ```
 
