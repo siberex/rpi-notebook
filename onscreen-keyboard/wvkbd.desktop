@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Icon=keyboard
+Name=Toggle Keyboard
+Name[en_US]=Toggle Keyboard
+GenericName=Keyboard
+Comment=Toggle the onscreen keyboard
+Exec=/home/pi/onscreen-keyboard/toggle-wvkbd.sh
+Terminal=false
+Categories=Utility
+X-MB-INPUT-MECHANISM=True
