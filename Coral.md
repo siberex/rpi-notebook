@@ -90,10 +90,11 @@ Note: [`apt install gasket-dkms`](https://coral.ai/docs/m2/get-started#2-install
 ```bash
 git clone https://github.com/google/gasket-driver.git
 cd gasket-driver
-debuild -us -uc -tc -b
-cd ..
-
-sudo dpkg -i gasket-dkms_1.0-18_all.deb
+dpkg-buildpackage -us -uc -tc -b
+sudo dkms build gasket/1.0 -k `uname -r` --kernelsourcedir=/home/pi/linux-cf64a1dfecc2dc418efdd61701c1a4b185ab4761
+sudo dkms install gasket/1.0
+# cd ..
+# sudo dpkg -i gasket-dkms_1.0-18_all.deb
 ```
 
 Important prerequisite: [Install kernel headers for your particular kernel](https://pineboards.io/blogs/tutorials/how-to-update-your-raspberry-pi-kernel-and-install-kernel-headers)
@@ -111,15 +112,12 @@ lspci -nn | grep 089a
 # 0000:03:00.0 System peripheral [0880]: Global Unichip Corp. Coral Edge TPU [1ac1:089a]
 # 0000:04:00.0 System peripheral [0880]: Global Unichip Corp. Coral Edge TPU [1ac1:089a]
 
-sudo ls /dev/apex_0
+sudo ls -la /dev/apex_*
 dmesg | grep gasket
 dmesg | grep apex
 modinfo gasket
 modinfo apex
 lsmod | grep apex
-
-# sudo dpkg -i gasket-dkms
-ls -la /lib/modules/6.6.47+rpt-rpi-v8/updates/dkms/
 ```
 
 
