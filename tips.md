@@ -106,6 +106,11 @@ dtparam=rtc_bbat_vchg=3000000
 # Enable Type C port host mode
 #dtoverlay=dwc2,dr_mode=host
 
+# https://github.com/raspberrypi/linux/blob/fbd8b3facb36ce888b1cdcf5f45a78475a8208f2/arch/arm/boot/dts/overlays/README#L5119
+dtoverlay=vc4-kms-v3d-pi5,cma-512
+# https://github.com/raspberrypi/firmware/issues/1180#issuecomment-509373742
+max_framebuffers=2
+
 # Command queueing for A2 microSD cards
 # https://forums.raspberrypi.com/viewtopic.php?t=367459
 dtparam=sd_cqe
