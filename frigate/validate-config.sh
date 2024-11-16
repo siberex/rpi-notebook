@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 docker run                                \
   -v $(pwd)/config.yml:/config/config.yml \
   --workdir /opt/frigate                  \

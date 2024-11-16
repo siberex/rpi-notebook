@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 printf '%(%Y-%m-%d %H:%M:%S)T\n' -1
 

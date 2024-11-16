@@ -70,6 +70,7 @@ GP5/UART1 RX -> GP0/UART0 TX
 ```bash
 ls /dev | grep usb
 screen /dev/tty.usbmodem14302 115200
+# screen /dev/ttyACM0 115200
 # Ctrl+A,Ctrl+\ to exit
 ```
 
@@ -80,8 +81,15 @@ brew install minicom
 
 ls /dev | grep usb
 minicom -b 115200 -D /dev/tty.usbmodem14302
+# minicom -b 115200 -D /dev/ttyACM0
 # Esc+X to exit, Esc+Z for menu
 ```
+
+Alternatives:
+
+- [VSCode Serial Monitor plugin](https://marketplace.visualstudio.com/items?itemName=ms-vscode.vscode-serial-monitor)
+- [CoolTerm](https://freeware.the-meiers.org)
+
 
 ## Usage (SWD)
 
