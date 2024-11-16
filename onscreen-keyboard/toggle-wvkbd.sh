@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Script to toggle virtual keyboard
 # /home/pi/onscreen-keyboard/toggle-wvkbd.sh
 PID="$(pidof wvkbd-mobintl)"

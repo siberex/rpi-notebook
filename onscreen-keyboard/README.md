@@ -1,3 +1,26 @@
+# Squeekboard (labwc compositor)
+
+With [new compositor](https://www.raspberrypi.com/news/a-new-release-of-raspberry-pi-os/) you can use [Squeekboard](https://github.com/droidian/squeekboard).
+
+First, switch to labwc:
+
+```bash
+sudo raspi-config
+# 6 Advanced Options → A6 Wayland → Labwc
+```
+
+Install and enable Squeekboard:
+
+```bash
+sudo apt install squeekboard wfplug-squeek
+sudo raspi-config
+# 2 Display Options → D6 Onscreen Keyboard → Always On
+
+```
+
+
+# Section below is outdated
+
 The latest rPi OS (Bookworm) uses Wayland. It shipped without onscreen keyboard.
 
 Most onscreen keyboards (like matchbox-keyboard) do not work with Wayland.
