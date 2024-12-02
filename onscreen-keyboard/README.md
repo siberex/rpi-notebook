@@ -1,6 +1,6 @@
 # Squeekboard (labwc compositor)
 
-With [new compositor](https://www.raspberrypi.com/news/a-new-release-of-raspberry-pi-os/) you can use [Squeekboard](https://github.com/droidian/squeekboard).
+With [new compositor](https://www.raspberrypi.com/news/a-new-release-of-raspberry-pi-os/) you can use [Squeekboard](https://gitlab.gnome.org/World/Phosh/squeekboard).
 
 First, switch to labwc:
 
