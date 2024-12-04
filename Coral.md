@@ -91,7 +91,7 @@ Note: [`apt install gasket-dkms`](https://coral.ai/docs/m2/get-started#2-install
 git clone https://github.com/google/gasket-driver.git
 cd gasket-driver
 dpkg-buildpackage -us -uc -tc -b
-sudo dkms build gasket/1.0 -k `uname -r` --kernelsourcedir=/home/pi/linux-cf64a1dfecc2dc418efdd61701c1a4b185ab4761
+sudo dkms build gasket/1.0 -k `uname -r` --kernelsourcedir=/home/pi/linux
 sudo dkms install gasket/1.0
 # cd ..
 # sudo dpkg -i gasket-dkms_1.0-18_all.deb
