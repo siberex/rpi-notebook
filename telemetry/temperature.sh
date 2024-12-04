@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+BASEDIR="$( cd "$(dirname "$0")" ; pwd -P )"
+MY_CMDNAME=${0##*/}
+
 printf '%(%Y-%m-%d %H:%M:%S)T\n' -1
 
 # Note rPi CPU and GPU are on the same chip, and GPU don't hanve any separate temperature sensor
@@ -22,6 +25,12 @@ echo "PMIC        => $temp_pmic °C"
 temp_rp1=$(python -c "import psutil; print(psutil.sensors_temperatures()['rp1_adc'][0].current)")
 echo "RP1         => $temp_rp1 °C"
 
+fan_speed=$(python -c "import psutil; print(psutil.sensors_fans()['pwmfan'][0].current)")
+echo "FAN         => $fan_speed RPM"
+
+# See also: vcgencmd get_throttled
+# https://github.com/garyexplains/examples/blob/master/pi5si.sh
+
 # See also: s-tui
 # https://github.com/amanusk/s-tui
 # https://github.com/giampaolo/psutil
@@ -36,7 +45,7 @@ for device_path in /sys/class/apex/apex_*; do
     fi
 done
 
-
-# Usage:
-# watch -c -b -n 1 -- './temperature.sh'
-# watch -c -b -n 1 -- vcgencmd measure_temp
+if [ $# -eq 0 ]; then
+    echo ℹ️ Usage:
+    echo "watch -c -b -n 1 -- $BASEDIR/$MY_CMDNAME -s"
+fi
