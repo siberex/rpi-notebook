@@ -8,7 +8,7 @@
 - https://github.com/google-coral/test_data Various models and other testing data
 - https://github.com/google/gasket-driver Coral Gasket Driver (allows usage of the Coral EdgeTPU on Linux systems)
 
-## rPi5 configuration
+## How to configure the Google Coral Edge TPU on the Raspberry Pi 5
 
 Add to the `/boot/firmware/config.txt`:
 
@@ -20,7 +20,7 @@ kernel=kernel8.img
 dtparam=pciex1
 dtparam=pciex1_gen=3
 
-# Enable Pineboards Hat Ai
+# Enable Pineboards Hat Ai, if needed:
 dtoverlay=pineboards-hat-ai
 ```
 
@@ -39,11 +39,28 @@ sudo apt install libedgetpu1-std
 # sudo apt install libedgetpu1-max
 ```
 
-(Optionally) Install Bazel and build from source:
+(Optionally) Build libedgetpu from source:
 
 ```bash
+# Without Bazel:
+# sudo apt install libabsl-dev libflatbuffers-dev
+# git clone https://github.com/tensorflow/tensorflow $HOME/tensorflow
+# cd $HOME/tensorflow && git checkout v2.16.1
+git clone https://github.com/google-coral/libedgetpu $HOME/libedgetpu && cd $HOME/libedgetpu
+TFROOT=$HOME/tensorflow make -f makefile_build/Makefile -j$(nproc) libedgetpu
+
+# With Bazel:
 go install github.com/bazelbuild/bazelisk@latest
 sudo ln -s "$(go env GOPATH)/bin/bazelisk" /usr/local/bin/bazel
+# Option 1. Using Docker:
+DOCKER_CPUS="k8" DOCKER_IMAGE="ubuntu:22.04" DOCKER_TARGETS=libedgetpu make docker-build
+DOCKER_CPUS="armv7a aarch64" DOCKER_IMAGE="debian:bookworm" DOCKER_TARGETS=libedgetpu make docker-build
+debuild -us -uc -tc -b -a arm64 -d
+# Option 2. Without Docker:
+make
+sudo apt install python3-dev
+CPU=aarch64 make
+debuild -us -uc -tc -b
 ```
 
 Usage example:
@@ -85,21 +102,55 @@ The Coral ("Apex") PCIe driver is required to communicate with any Edge TPU devi
 
 Note: [`apt install gasket-dkms`](https://coral.ai/docs/m2/get-started#2-install-the-pcie-driver-and-edge-tpu-runtime) will NOT work.
 
-[Install from sources](https://pineboards.io/blogs/tutorials/how-to-configure-the-google-coral-edge-tpu-on-the-raspberry-pi-5):
+Note: gasket-driver is pretty much abandoned by Coral team, so you will need to apply some patches.
+
+Install from sources:
 
 ```bash
+# sudo apt install -y devscripts debhelper dkms dh-dkms
+
+# Remove existing package
+sudo dpkg -r gasket-dkms
+
 git clone https://github.com/google/gasket-driver.git
 cd gasket-driver
-dpkg-buildpackage -us -uc -tc -b
-sudo dkms build gasket/1.0 -k `uname -r` --kernelsourcedir=/home/pi/linux
-sudo dkms install gasket/1.0
-# cd ..
-# sudo dpkg -i gasket-dkms_1.0-18_all.deb
+
+# Apply patches
+# curl -fsSL https://github.com/google/gasket-driver/pull/35.patch -o no_llseek.patch
+curl -fsSL https://github.com/google/gasket-driver/pull/38.patch -o no_llseek_CONFIG_PM_SLEEP.patch
+curl -fsSL https://github.com/google/gasket-driver/pull/40.patch -o MODULE_IMPORT_NS.patch
+curl -fsSL https://github.com/google/gasket-driver/pull/42.patch -o dkms_deprecation.patch
+find -type f -name *.patch -exec git apply -v {} \;
+
+# Build debian package
+debuild -us -uc -tc -b
+
+# Install debian package from file
+cd ..
+sudo dpkg -i gasket-dkms_1.0-18_all.deb
+
+# Without helper scripts, build and install:
+# dpkg-buildpackage -us -uc -tc -b
+# sudo dkms build gasket/1.0 -k `uname -r` --kernelsourcedir=/home/pi/linux
+# sudo dkms install gasket/1.0
 ```
 
-Important prerequisite: [Install kernel headers for your particular kernel](https://pineboards.io/blogs/tutorials/how-to-update-your-raspberry-pi-kernel-and-install-kernel-headers)
+Important prerequisite: Install [kernel headers](https://www.raspberrypi.com/documentation/computers/linux_kernel.html#kernel-headers) for your particular kernel version (`uname -r`).
+
+Note: You will need to repeat this each time after upgrading kernel with `rpi-upgrade`:
 
 ```bash
+sudo apt install linux-headers-rpi-v8
+```
+
+It can take several weeks to update the kernel headers package to reflect the latest kernel version. For the latest header versions, use [rpi-source](https://github.com/RPi-Distro/rpi-source) tool (it will extract headers from the kernel repo):
+
+```bash
+# sudo apt install git bc bison flex libssl-dev
+
+# sudo curl -fsSL https://raw.githubusercontent.com/RPi-Distro/rpi-source/master/rpi-source -o /usr/local/bin/rpi-source
+# sudo chmod +x /usr/local/bin/rpi-source
+
 rpi-source --tag-update
 rpi-source --default-config
 ```
@@ -121,7 +172,7 @@ lsmod | grep apex
 ```
 
 
-## [PyCoral](https://github.com/google-coral/pycoral)
+## Installing PyCoral [PyCoral](https://github.com/google-coral/pycoral) for Google Coral on Raspberry Pi 5
 
 Warning: PyCoral [requires very specific Python version](https://github.com/google-coral/pycoral/issues/85) (3.9) to be used:
 
@@ -143,12 +194,97 @@ python3 examples/classify_image.py \
     --input test_data/parrot.jpg
 ```
 
-Better to install it in the docker container with that specific python version:
+Better to install it in the Docker container environment with that specific Python version.
 
-→ https://pineboards.io/blogs/tutorials/installing-pycoral-for-google-coral-on-raspberry-pi-5
+First, [install Docker](https://docs.docker.com/engine/install/debian/#install-using-the-repository):
+
+```bash
+# Non-CE:
+sudo apt install docker.io
+
+# Community Edition:
+# Add Docker's official GPG key:
+# sudo apt install ca-certificates curl
+sudo install -m 0755 -d /etc/apt/keyrings
+sudo curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc
+sudo chmod a+r /etc/apt/keyrings/docker.asc
+
+# Add the repository to Apt sources:
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian \
+  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+sudo apt update
+
+sudo apt install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+```
+
+Create PyCoral Docker Container:
+
+```Docker
+FROM debian:10 
+ 
+WORKDIR /home 
+ENV HOME /home 
+RUN cd ~ 
+RUN apt-get update 
+RUN apt-get install -y git nano python3-pip python-dev pkg-config wget usbutils curl 
+ 
+RUN echo "deb https://packages.cloud.google.com/apt coral-edgetpu-stable main" \ 
+| tee /etc/apt/sources.list.d/coral-edgetpu.list 
+RUN curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add - 
+RUN apt-get update 
+RUN apt-get install -y edgetpu-examples 
+```
+
+
+```bash
+# Build container and run PyCoral in Docker with Python 3.9
+
+sudo docker build –t "coral" .
+
+# Check host device is present:
+ls /dev | grep apex
+
+# Run container
+# sudo docker run -it --device /dev/apex_0:/dev/apex_0 coral /bin/bash
+
+# Or, with Dual Coral:
+sudo docker run -it --device /dev/apex_0:/dev/apex_0 --device /dev/apex_1:/dev/apex_1 coral /bin/bash
+
+# ...
+python3 /usr/share/edgetpu/examples/classify_image.py \
+    --model /usr/share/edgetpu/examples/models/mobilenet_v2_1.0_224_inat_bird_quant_edgetpu.tflite \
+    --label /usr/share/edgetpu/examples/models/inat_bird_labels.txt \
+    --image /usr/share/edgetpu/examples/images/bird.bmp
+```
+
 
 [Benchmarks](https://github.com/google-coral/pycoral/tree/master/benchmarks/)
 
+
+
+
+# Patching msi-parent on the DTOverlay:
+
+You should not need this. But in case you need, make sure you are absolutely aware of your actions and the consequences.
+
+```bash
+# Back up the Device Tree Blob (DTB)
+sudo cp /boot/firmware/bcm2712-rpi-5-b.dtb /boot/firmware/bcm2712-rpi-5-b.dtb.bak
+
+# Decompile the DTB into a DTS file
+sudo dtc -I dtb -O dts /boot/firmware/bcm2712-rpi-5-b.dtb -o /tmp/i-know-what-i-am-doing.dts
+
+# Modify the Device Tree Source (DTS)
+sudo sed -i '/pcie@110000 {/,/};/{/msi-parent = <[^>]*>;/{s/msi-parent = <[^>]*>;/msi-parent = <0x67>;/}}' /tmp/i-know-what-i-am-doing.dts
+
+# Recompile the DTS back into a DTB
+sudo dtc -I dts -O dtb /tmp/i-know-what-i-am-doing.dts -o /tmp/i-know-what-i-am-doing.dtb
+
+# Replace your current DTB with the new one
+sudo mv /tmp/i-know-what-i-am-doing.dtb /boot/firmware/bcm2712-rpi-5-b.dtb
+```
 
 
 ## Additional links
@@ -167,3 +303,5 @@ Better to install it in the docker container with that specific python version:
     --privileged -v /dev/bus/usb:/dev/bus/usb codeproject/ai-server:rpi64
     # http://pi:32168
     ```
+
+
