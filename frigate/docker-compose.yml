@@ -1,0 +1,33 @@
+services:
+  frigate:
+    container_name: frigate
+    # privileged: true
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    restart: unless-stopped
+    image: ghcr.io/blakeblackshear/frigate:stable
+    shm_size: "128mb"
+    devices:
+      - /dev/apex_0:/dev/apex_0
+      - /dev/apex_1:/dev/apex_1
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./config:/config
+      - ./storage:/media/frigate
+      - type: tmpfs # Optional: 1GB of memory, reduces SD Card wear
+        target: /tmp/cache
+        tmpfs:
+          size: 1000000000
+    ports:
+      # - "5000:5000" # !!! Unauthenticated UI and API access !!!
+      - "8971:8971"
+      - "8554:8554" # RTSP feeds
+      - "8555:8555/tcp" # WebRTC over tcp
+      - "8555:8555/udp" # WebRTC over udp
+    environment:
+      FRIGATE_RESTREAM_PASSWORD: "one_ring_to_rule_them_all"
+      FRIGATE_RTSP1_PASSWORD: "password1"
+      FRIGATE_RTSP2_PASSWORD: "password2"
+      # tailscale ip -4
+      FRIGATE_IP_WEBRTC: 100.100.200.200
