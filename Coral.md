@@ -100,11 +100,35 @@ Apex: Apex refers to the EdgeTPU v1.
 
 The Coral ("Apex") PCIe driver is required to communicate with any Edge TPU device over a PCIe connection. whereas the Edge TPU runtime provides the required programming interface for the Edge TPU.
 
-Note: [`apt install gasket-dkms`](https://coral.ai/docs/m2/get-started#2-install-the-pcie-driver-and-edge-tpu-runtime) will NOT work.
+**Note**: [`apt install gasket-dkms`](https://coral.ai/docs/m2/get-started#2-install-the-pcie-driver-and-edge-tpu-runtime) will **NOT** work.
 
-Note: gasket-driver is pretty much abandoned by Coral team, so you will need to apply some patches.
 
-Install from sources:
+### Kernel headers
+
+Important prerequisite: Install [kernel headers](https://www.raspberrypi.com/documentation/computers/linux_kernel.html#kernel-headers) for your particular kernel version (`uname -r`).
+
+Note: You will need to repeat this each time after upgrading kernel with `rpi-upgrade`:
+
+```bash
+sudo apt install linux-headers-rpi-v8
+```
+
+It can take several weeks to update the kernel headers package to reflect the latest kernel version. For the latest header versions, use [rpi-source](https://github.com/RPi-Distro/rpi-source) tool (it will extract headers from the kernel repo):
+
+```bash
+# sudo apt install git bc bison flex libssl-dev
+
+# sudo curl -fsSL https://raw.githubusercontent.com/RPi-Distro/rpi-source/master/rpi-source -o /usr/local/bin/rpi-source
+# sudo chmod +x /usr/local/bin/rpi-source
+
+rpi-source --tag-update
+rpi-source --default-config
+```
+
+
+###  Install gasket-driver from source
+
+**Note**: gasket-driver is pretty much abandoned by Coral team, so you will need to apply some patches.
 
 ```bash
 # sudo apt install -y devscripts debhelper dkms dh-dkms
@@ -135,24 +159,14 @@ sudo dpkg -i gasket-dkms_1.0-18_all.deb
 # sudo dkms install gasket/1.0
 ```
 
-Important prerequisite: Install [kernel headers](https://www.raspberrypi.com/documentation/computers/linux_kernel.html#kernel-headers) for your particular kernel version (`uname -r`).
 
-Note: You will need to repeat this each time after upgrading kernel with `rpi-upgrade`:
-
-```bash
-sudo apt install linux-headers-rpi-v8
-```
-
-It can take several weeks to update the kernel headers package to reflect the latest kernel version. For the latest header versions, use [rpi-source](https://github.com/RPi-Distro/rpi-source) tool (it will extract headers from the kernel repo):
+### udev rules to manage device permissions
 
 ```bash
-# sudo apt install git bc bison flex libssl-dev
 
-# sudo curl -fsSL https://raw.githubusercontent.com/RPi-Distro/rpi-source/master/rpi-source -o /usr/local/bin/rpi-source
-# sudo chmod +x /usr/local/bin/rpi-source
-
-rpi-source --tag-update
-rpi-source --default-config
+sudo sh -c "echo 'SUBSYSTEM==\"apex\", MODE=\"0660\", GROUP=\"apex\"' >> /etc/udev/rules.d/65-apex.rules"
+sudo groupadd apex
+sudo adduser $USER apex
 ```
 
 
@@ -162,6 +176,8 @@ rpi-source --default-config
 lspci -nn | grep 089a
 # 0000:03:00.0 System peripheral [0880]: Global Unichip Corp. Coral Edge TPU [1ac1:089a]
 # 0000:04:00.0 System peripheral [0880]: Global Unichip Corp. Coral Edge TPU [1ac1:089a]
+
+lspci -vvv -d 1ac1:089a
 
 sudo ls -la /dev/apex_*
 dmesg | grep gasket
