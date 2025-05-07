@@ -9,6 +9,12 @@ detectors:
     type: edgetpu
     device: pci:1
 
+telemetry:
+  stats:
+    amd_gpu_stats: false
+    intel_gpu_stats: false
+    network_bandwidth: true
+
 go2rtc:
   rtsp:
     default_query: "mp4"
