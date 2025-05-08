@@ -4,6 +4,23 @@ Pico is a [RP2040](https://en.wikipedia.org/wiki/RP2040) microcontroller board
 
 # SDK
 
+## Prerequisites
+
+[Arm GNU Toolchain](https://developer.arm.com/downloads/-/arm-gnu-toolchain-downloads):
+
+```bash
+xcode-select --install
+brew install --cask gcc-arm-embedded
+```
+
+Debian / Ubuntu:
+
+```bash
+sudo apt install git tar cmake python3 build-essential gcc-arm-none-eabi libnewlib-arm-none-eabi libstdc++-arm-none-eabi-newlib g++
+```
+
+## Install SDK
+
 ```bash
 brew install cmake
 brew install --cask gcc-arm-embedded
@@ -12,12 +29,17 @@ mkdir $HOME/pico && cd $HOME/pico
 
 git clone -b master --recurse-submodules https://github.com/raspberrypi/pico-sdk.git
 git clone https://github.com/raspberrypi/pico-extras.git
+git clone -b main --recurse-submodules https://github.com/FreeRTOS/FreeRTOS-Kernel.git
+git clone https://github.com/pimoroni/pimoroni-pico.git
 
+# Add to .bashrc
 export PICO_SDK_PATH=$HOME/pico/pico-sdk
 export PICO_EXTRAS_PATH=$HOME/pico/pico-extras
+export FREERTOS_KERNEL_PATH=$HOME/pico/FreeRTOS-Kernel
+export PIMORONI_PICO_PATH=$HOME/pico/pimoroni-pico
 ```
 
-Verify examples are built succesfully:
+## Verify examples are built succesfully
 
 ```bash
 cd $HOME/pico
@@ -27,8 +49,20 @@ cd pico-examples
 mkdir build && cd build
 cmake ..
 
-cd pwm/led_fade
+cd cd $HOME/pico/pico-examples/build/pwm/led_fade
 make -j4
+
+
+cd cd $HOME/pico/pico-examples/build/freertos/hello_freertos
+make -j4
+
+cd $HOME/pico
+mkdir build_rp2350 && cd build_rp2350
+
+cmake .. -DPICO_BOARD=pico2
+
+
+#universa; toddo
 ```
 
 
@@ -93,24 +127,52 @@ Alternatives:
 
 ## Usage (SWD)
 
-Upload binaries
+### Upload binaries
 
 ```bash
 brew install openocd
 
-# Proiduce elf file
-make -j4
+# Produce an elf file
+# make -j4
 
 sudo openocd -f interface/cmsis-dap.cfg -f target/rp2040.cfg -c "adapter speed 5000" -c "program blink.elf verify reset exit"
 ```
 
-Debug with SWD
+### Debug with SWD
+
+[GDB with MacOS](https://sourceware.org/gdb/wiki/PermissionsDarwin)
+
+[LLDB](https://lldb.llvm.org/)
 
 ```bash
-# Produce elf file with debug symbols
-cmake -DCMAKE_BUILD_TYPE=Debug ..
+# Produce an elf file with the debug symbols
+cmake -DCMAKE_BUILD_TYPE=Debug -DPICO_BOARD=pico ..
 make -j4
 
+# Run an OpenOCD server:
 sudo openocd -f interface/cmsis-dap.cfg -f target/rp2040.cfg -c "adapter speed 5000"
+
+# Run debugger in another tab:
 gdb blink.elf
+> target remote localhost:3333
+> monitor reset init
+> continue
+
+```
+
+
+# [Picotool](https://github.com/raspberrypi/pico-sdk-tools/blob/main/packages/linux/picotool/build-picotool.sh)
+
+```bash
+# Prerequisites
+brew install libusb pkg-config
+
+# Build and install
+cd $HOME/pico
+git clone https://github.com/raspberrypi/picotool.git
+cd picotool
+mkdir build && cd build
+cmake ..
+make
+sudo make install
 ```
