@@ -33,10 +33,16 @@ git clone -b main --recurse-submodules https://github.com/FreeRTOS/FreeRTOS-Kern
 git clone https://github.com/pimoroni/pimoroni-pico.git
 
 # Add to .bashrc
-export PICO_SDK_PATH=$HOME/pico/pico-sdk
-export PICO_EXTRAS_PATH=$HOME/pico/pico-extras
-export FREERTOS_KERNEL_PATH=$HOME/pico/FreeRTOS-Kernel
-export PIMORONI_PICO_PATH=$HOME/pico/pimoroni-pico
+export PICO_SDK_PATH="$HOME/pico/pico-sdk"
+export PICO_EXTRAS_PATH="$HOME/pico/pico-extras"
+export FREERTOS_KERNEL_PATH="$HOME/pico/FreeRTOS-Kernel"
+export PIMORONI_PICO_PATH="$HOME/pico/pimoroni-pico"
+
+# https://embecosm.com/downloads/tool-chain-downloads/#core-v-top-of-tree-compilers
+export PICO_RISCV_TOOLCHAIN_PATH="$HOME/.pico-sdk/toolchain/RISCV_RPI_2_0_0_5"
+# https://developer.arm.com/downloads/-/arm-gnu-toolchain-downloads
+export PICO_ARM_TOOLCHAIN_PATH="$HOME/.pico-sdk/toolchain/14_2_Rel1"
+export PICO_TOOLCHAIN_PATH="$PICO_ARM_TOOLCHAIN_PATH"
 ```
 
 ## Verify examples are built succesfully
@@ -44,25 +50,28 @@ export PIMORONI_PICO_PATH=$HOME/pico/pimoroni-pico
 ```bash
 cd $HOME/pico
 git clone https://github.com/raspberrypi/pico-examples.git
-cd pico-examples
 
+# Build something with default compile settings
+cd $HOME/pico/pico-examples
 mkdir build && cd build
 cmake ..
-
-cd cd $HOME/pico/pico-examples/build/pwm/led_fade
+cd pwm/led_fade
 make -j4
 
-
-cd cd $HOME/pico/pico-examples/build/freertos/hello_freertos
-make -j4
-
-cd $HOME/pico
+# RP2350 + debug
+cd $HOME/pico/pico-examples
 mkdir build_rp2350 && cd build_rp2350
+cmake .. -DPICO_BOARD=pico2 -DCMAKE_BUILD_TYPE=Debug
+cd freertos/hello_freertos
+make -j4
 
-cmake .. -DPICO_BOARD=pico2
-
-
-#universa; toddo
+# Universal binary
+cd $HOME/pico/pico-examples
+mkdir build_uni && cd build_uni
+cmake .. -DPICO_RISCV_TOOLCHAIN_PATH="$PICO_RISCV_TOOLCHAIN_PATH" -DPICO_ARM_TOOLCHAIN_PATH="$PICO_ARM_TOOLCHAIN_PATH" -DCMAKE_BUILD_TYPE=Debug
+cd universal
+make
+ls -la hello_universal/hello_universal.uf2
 ```
 
 
@@ -175,4 +184,11 @@ mkdir build && cd build
 cmake ..
 make
 sudo make install
+```
+
+## Usage
+
+```bash
+picotool info -bp
+picotool load --verify -F hello_freertos2.uf2
 ```
