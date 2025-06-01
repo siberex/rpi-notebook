@@ -1,0 +1,3 @@
+### Rotate HDMI_1 output 90 degree CW and set resolution
+### cat /boot/firmware/cmdline.txt
+console=tty1 root=PARTUUID=d37b201a-02 rootfstype=ext4 fsck.repair=yes rootwait video=HDMI-A-1:1920x1200M@60,rotate=90 cfg80211.ieee80211_regdom=US

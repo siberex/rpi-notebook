@@ -4,7 +4,8 @@
 
 # Uncomment some or all of these to enable the optional hardware interfaces
 #dtparam=i2c_arm=on
-#dtparam=i2s=on
+# PCM pins function enable:
+dtparam=i2s=on
 #dtparam=spi=on
 
 usb_max_current_enable=1
@@ -25,7 +26,12 @@ ignore_lcd=1
 dtparam=fan_temp3_speed=255
 
 # Enable audio (loads snd_bcm2835)
-dtparam=audio=off
+dtparam=audio=on
+
+# Sound card DT driver to capture I2S (PCM GPIO pins) input
+# arecord --list-devices
+# arecord -vv --device=plughw:CARD=sndrpigooglevoi,DEV=0
+dtoverlay=googlevoicehat-soundcard
 
 # Additional overlays and parameters are documented
 # /boot/firmware/overlays/README
