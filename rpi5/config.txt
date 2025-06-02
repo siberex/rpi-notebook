@@ -47,7 +47,7 @@ auto_initramfs=1
 
 # Enable DRM VC4 V3D driver
 # https://github.com/raspberrypi/linux/blob/fbd8b3facb36ce888b1cdcf5f45a78475a8208f2/arch/arm/boot/dts/overlays/README#L5119
-dtoverlay=vc4-kms-v3d
+dtoverlay=vc4-kms-v3d-pi5
 max_framebuffers=2
 
 # Don't have the firmware create an initial video= setting in cmdline.txt.
