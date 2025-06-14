@@ -128,6 +128,13 @@ minicom -b 115200 -D /dev/tty.usbmodem14302
 # Esc+X to exit, Esc+Z for menu
 ```
 
+Expose hardware serial console as a telnet server with `socat`:
+
+```bash
+socat TCP-LISTEN:1234,bind=127.0.0.1,reuseaddr,fork FILE:/dev/ttyACM0,b115200,raw,echo=0
+telnet localhost 1234
+```
+
 Alternatives:
 
 - [VSCode Serial Monitor plugin](https://marketplace.visualstudio.com/items?itemName=ms-vscode.vscode-serial-monitor)
