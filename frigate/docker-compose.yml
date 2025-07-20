@@ -9,8 +9,15 @@ services:
     image: ghcr.io/blakeblackshear/frigate:stable
     shm_size: "128mb"
     devices:
-      - /dev/apex_0:/dev/apex_0
-      - /dev/apex_1:/dev/apex_1
+      - /dev/apex_0:/dev/apex_0 # Coral
+      - /dev/apex_1:/dev/apex_1 # Coral
+      # - /dev/hailo0 # Hailo-8L
+      # - /dev/video11:/dev/video11 # HW-accelerated decoding for rPi4
+      - /dev/video19:/dev/video19 # HW-accelerated decoding for rPi5
+      - /dev/media0:/dev/media0
+      - /dev/media1:/dev/media1
+      - /dev/media2:/dev/media2
+      - /dev/media3:/dev/media3 # HW-accelerated decoding for rPi5
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ./config:/config

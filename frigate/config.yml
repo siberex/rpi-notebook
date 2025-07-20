@@ -1,5 +1,7 @@
+# https://docs.frigate.video/configuration/reference
+
 mqtt:
-  enabled: False
+  enabled: false
 
 detectors:
   coral1:
@@ -9,6 +11,15 @@ detectors:
     type: edgetpu
     device: pci:1
 
+# auth:
+  # enabled: True
+  #### TODO: REMOVE THIS
+  # reset_admin_password: True
+  # failed_login_rate_limit: "1/second;5/minute;20/hour"
+  # trusted_proxies:
+    # Subnet for the internal docker compose network
+    # - 172.17.0.0/16
+
 telemetry:
   stats:
     amd_gpu_stats: false
@@ -17,29 +28,41 @@ telemetry:
 
 go2rtc:
   rtsp:
-    default_query: "mp4"
-    username: "admin"
-    password: "{FRIGATE_RESTREAM_PASSWORD}"
+    default_query: "video=all&audio=all"
+    username: admin
+    password: '{FRIGATE_RESTREAM_PASSWORD}'
   streams:
     cam1_main:
       # Stream which supports video & aac audio. This is only supported for rtsp streams, http must use ffmpeg
       - rtsp://admin:{FRIGATE_RTSP_PASSWORD}@10.0.0.2:554/Preview_01_main
-      # Copy of the stream which transcodes audio to the missing codec
-      - "ffmpeg:cam1_main#audio=opus"
+      # Copy of the stream which transcodes audio to opus for webrtc
+      - ffmpeg:cam1_main#video=h264#audio=opus#audio=copy#rotate=90
     cam1_sub:
       - rtsp://admin:{FRIGATE_RTSP_PASSWORD}@10.0.0.2:554/Preview_01_sub
-      - "ffmpeg:cam1_sub#audio=opus"
+      - ffmpeg:cam1_sub#video=h264#audio=opus#audio=copy#rotate=90
   webrtc:
     candidates:
       # Bind specific ip for WebRTC
-      - "{FRIGATE_IP_WEBRTC}:8555"
-      - stun:8555
+      - '{FRIGATE_IP_WEBRTC}:8555'
+
+birdseye:
+  enabled: true
+  mode: objects
 
 cameras:
   cam1:
-    enabled: True
+    enabled: true
+
+    timestamp_style:
+      position: "tl"
+      format: "%d.%m.%Y %H:%M:%S"
 
     ffmpeg:
+      # rPi4: Use hw accel. Proxy /dev/video11 in docker-compose devices config
+      # https://docs.frigate.video/configuration/hardware_acceleration/
+      # hwaccel_args: preset-rpi-64-h265
+      # rPi5: https://github.com/blakeblackshear/frigate/discussions/18431
+      # hwaccel_args: -hwaccel drm
       output_args:
         record: preset-record-generic-audio-copy
       inputs:
@@ -56,23 +79,21 @@ cameras:
       stream_name: cam1_sub
 
     detect:
-      enabled: True
+      enabled: true
     objects:
       track:
         - person
-        - car
-        - bicycle
-        - motorbike
-        - bus
-        - truck
         - cat
-        - dog
 
     record:
-      enabled: True
+      enabled: true
     snapshots:
-      enabled: True
+      enabled: true
 
     # audio:
     #   enabled: True
     #   min_volume: 1000
+
+    # motion: {}
+
+# version: 0.14

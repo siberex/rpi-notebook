@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-BASEDIR="$( cd "$(dirname "$0")" ; pwd -P )"
+BASEDIR="$( cd "$(dirname "$0")" || exit ; pwd -P )"
 MY_CMDNAME=${0##*/}
 
 printf '%(%Y-%m-%d %H:%M:%S)T\n' -1
