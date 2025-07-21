@@ -2,13 +2,23 @@
 # http://rptl.io/configtxt
 # Some settings may impact device functionality. See link above for details
 
+# Note: There is a 98-character line length limit for entries.
+# Raspberry Pi OS ignores any characters past this limit.
+
 # Uncomment some or all of these to enable the optional hardware interfaces
+# I2C interface enable:
 #dtparam=i2c_arm=on
+
 # PCM pins function enable:
-dtparam=i2s=on
+# See also: https://github.com/siberex/rpi-notebook/blob/238d3acd870dd136605de2a096fc2c7594095fe2/pcm_i2s_input.md
+#dtparam=i2s=on
+
+# SPI interface enable:
 #dtparam=spi=on
 
 usb_max_current_enable=1
+
+# RTC battery enable
 dtparam=rtc_bbat_vchg=3000000
 
 # Enable Type C port host mode
@@ -23,15 +33,36 @@ disable_poe_fan=1
 disable_splash=1
 ignore_lcd=1
 
+# rPi5 FAN settings
+# See also: https://github.com/raspberrypi/firmware/blob/4558d93090658fe288d00bc7c5a1553454c012a2/boot/overlays/README#L271
+
+# 50 deg, 20% speed
+dtparam=fan_temp0=50000
+dtparam=fan_temp0_hyst=2500
+dtparam=fan_temp0_speed=50
+
+# 55 deg, 60% speed
+dtparam=fan_temp1=55000
+dtparam=fan_temp1_hyst=2500
+dtparam=fan_temp1_speed=150
+
+# 100%
+dtparam=fan_temp2=60000
+dtparam=fan_temp2_hyst=2500
+dtparam=fan_temp2_speed=255
+
+# 100%
+dtparam=fan_temp3=65000
+dtparam=fan_temp3_hyst=2500
 dtparam=fan_temp3_speed=255
+
 
 # Enable audio (loads snd_bcm2835)
 dtparam=audio=on
 
-# Sound card DT driver to capture I2S (PCM GPIO pins) input
-# arecord --list-devices
-# arecord -vv --device=plughw:CARD=sndrpigooglevoi,DEV=0
-dtoverlay=googlevoicehat-soundcard
+# Sound card DT driver to capture I2S (PCM GPIO pins, see above) input
+#dtoverlay=tc358743
+#dtoverlay=tc358743-audio
 
 # Additional overlays and parameters are documented
 # /boot/firmware/overlays/README
