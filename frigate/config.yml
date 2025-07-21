@@ -34,12 +34,20 @@ go2rtc:
   streams:
     cam1_main:
       # Stream which supports video & aac audio. This is only supported for rtsp streams, http must use ffmpeg
-      - rtsp://admin:{FRIGATE_RTSP_PASSWORD}@10.0.0.2:554/Preview_01_main
+      - rtsp://admin:{FRIGATE_RTSP1_PASSWORD}@10.0.0.2:554/Preview_01_main
       # Copy of the stream which transcodes audio to opus for webrtc
       - ffmpeg:cam1_main#video=h264#audio=opus#audio=copy#rotate=90
     cam1_sub:
-      - rtsp://admin:{FRIGATE_RTSP_PASSWORD}@10.0.0.2:554/Preview_01_sub
+      - rtsp://admin:{FRIGATE_RTSP1_PASSWORD}@10.0.0.2:554/Preview_01_sub
       - ffmpeg:cam1_sub#video=h264#audio=opus#audio=copy#rotate=90
+
+    # cam_ext_main:
+    #   - 'rtsp://admin:{FRIGATE_RTSP2_PASSWORD}@192.168.1.200:554/cam/realmonitor?channel=1&subtype=0'
+    #   - ffmpeg:cam_ext_main#video=h264#audio=opus#audio=copy
+    # cam_ext_sub:
+    #   - 'rtsp://admin:{FRIGATE_RTSP2_PASSWORD}@192.168.1.200:554/cam/realmonitor?channel=1&subtype=1'
+    #   - ffmpeg:cam_ext_sub#video=h264#audio=opus#audio=copy
+
   webrtc:
     candidates:
       # Bind specific ip for WebRTC
@@ -95,5 +103,38 @@ cameras:
     #   min_volume: 1000
 
     # motion: {}
+
+  cam_ext:
+    enabled: true
+    ffmpeg:
+      output_args:
+        record: preset-record-generic-audio-copy
+      inputs:
+        - path: "rtsp://admin:{FRIGATE_RTSP2_PASSWORD}@192.168.1.200:554/cam/realmonitor?channel=1&subtype=0"
+        # - path: rtsp://127.0.0.1:8554/cam_ext_main
+          input_args: preset-rtsp-restream
+          roles:
+            - record
+        - path: "rtsp://admin:$FRIGATE_RTSP2_PASSWORD@192.168.1.200:554/cam/realmonitor?channel=1&subtype=1"
+        # - path: rtsp://127.0.0.1:8554/cam_ext_sub
+          input_args: preset-rtsp-restream
+          roles:
+            - detect
+            - audio
+    live:
+      stream_name: cam_ext_main
+
+    detect:
+      enabled: true
+    objects:
+      track:
+        - person
+        - cat
+        - dog
+
+    record:
+      enabled: true
+    snapshots:
+      enabled: true
 
 # version: 0.14
