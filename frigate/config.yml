@@ -11,14 +11,12 @@ detectors:
     type: edgetpu
     device: pci:1
 
-# auth:
-  # enabled: True
-  #### TODO: REMOVE THIS
-  # reset_admin_password: True
-  # failed_login_rate_limit: "1/second;5/minute;20/hour"
-  # trusted_proxies:
+auth:
+  enabled: true
+  failed_login_rate_limit: 1/second;5/minute;20/hour
+  trusted_proxies:
     # Subnet for the internal docker compose network
-    # - 172.17.0.0/16
+    - 172.17.0.0/16
 
 telemetry:
   stats:
@@ -26,104 +24,126 @@ telemetry:
     intel_gpu_stats: false
     network_bandwidth: true
 
+record:
+  enabled: true
+  alerts:
+    pre_capture: 5
+    post_capture: 5
+    retain:
+      days: 14
+      mode: all
+  detections:
+    pre_capture: 5
+    post_capture: 5
+    retain:
+      days: 14
+      mode: all
+
+ffmpeg:
+  output_args:
+    record: preset-record-generic
+  # rPi4: Use hw accel. Proxy /dev/video11 in docker-compose devices config
+  # https://docs.frigate.video/configuration/hardware_acceleration/
+  # all presets: https://github.com/blakeblackshear/frigate/blob/master/frigate/ffmpeg_presets.py
+  # hwaccel_args: preset-rpi-64-h265
+  # rPi5: https://github.com/blakeblackshear/frigate/discussions/18431
+  hwaccel_args: -hwaccel drm
+
+birdseye:
+  enabled: true
+  mode: objects
+
+# See also: https://github.com/AlexxIT/go2rtc/blob/master/internal/app/README.md
+# docker exec -it frigate bash
+# cat /dev/shm/go2rtc.yaml
 go2rtc:
   rtsp:
-    default_query: "video=all&audio=all"
+    # default_query: video=all&audio=all
     username: admin
     password: '{FRIGATE_RESTREAM_PASSWORD}'
   streams:
-    cam1_main:
-      # Stream which supports video & aac audio. This is only supported for rtsp streams, http must use ffmpeg
-      - rtsp://admin:{FRIGATE_RTSP1_PASSWORD}@10.0.0.2:554/Preview_01_main
-      # Copy of the stream which transcodes audio to opus for webrtc
-      - ffmpeg:cam1_main#video=h264#audio=opus#audio=copy#rotate=90
-    cam1_sub:
-      - rtsp://admin:{FRIGATE_RTSP1_PASSWORD}@10.0.0.2:554/Preview_01_sub
-      - ffmpeg:cam1_sub#video=h264#audio=opus#audio=copy#rotate=90
-
-    # cam_ext_main:
-    #   - 'rtsp://admin:{FRIGATE_RTSP2_PASSWORD}@192.168.1.200:554/cam/realmonitor?channel=1&subtype=0'
-    #   - ffmpeg:cam_ext_main#video=h264#audio=opus#audio=copy
-    # cam_ext_sub:
-    #   - 'rtsp://admin:{FRIGATE_RTSP2_PASSWORD}@192.168.1.200:554/cam/realmonitor?channel=1&subtype=1'
-    #   - ffmpeg:cam_ext_sub#video=h264#audio=opus#audio=copy
+    hall_main:
+      # DO NOT use quotes!
+      # DO NOT use ${ENV}, use either {ENV} to substitute string from env with Frigate,
+      # or ${{ENV}} to tell Frigate to skip substitution, so go2rtc will check env by itself.
+      - rtsp://admin:{FRIGATE_PW_HALL}@10.0.0.2:554/Preview_01_main
+    hall_sub:
+      - rtsp://admin:{FRIGATE_PW_HALL}@10.0.0.2:554/Preview_01_sub
+    door_main:
+      - rtsp://admin:{FRIGATE_PW_DOOR}@10.0.0.3:554/cam/realmonitor?channel=1&subtype=0
+    door_sub:
+      - rtsp://admin:{FRIGATE_PW_DOOR}@10.0.0.3:554/cam/realmonitor?channel=1&subtype=1
+    dome1_main:
+      # Skip Frigate string substitution and rely on the go2rtc env replacement
+      - rtsp://admin:${{FRIGATE_PW_DOME1}}@10.0.0.5:554/cam/realmonitor?channel=1&subtype=0
+    dome1_sub:
+      - rtsp://admin:${{FRIGATE_PW_DOME1}}@10.0.0.5:554/cam/realmonitor?channel=1&subtype=1
+    # dome2_main:
+    #   - ffmpeg:rtsp://admin:${{FRIGATE_PW_DOME2}}@10.0.0.4:554/cam/realmonitor?channel=1&subtype=0
+    # dome2_sub:
+    #   - ffmpeg:rtsp://admin:${{FRIGATE_PW_DOME2}}@10.0.0.4:554/cam/realmonitor?channel=1&subtype=1
 
   webrtc:
     candidates:
       # Bind specific ip for WebRTC
       - '{FRIGATE_IP_WEBRTC}:8555'
 
-birdseye:
-  enabled: true
-  mode: objects
-
 cameras:
-  cam1:
+  hall:
     enabled: true
-
-    timestamp_style:
-      position: "tl"
-      format: "%d.%m.%Y %H:%M:%S"
-
     ffmpeg:
-      # rPi4: Use hw accel. Proxy /dev/video11 in docker-compose devices config
-      # https://docs.frigate.video/configuration/hardware_acceleration/
-      # hwaccel_args: preset-rpi-64-h265
-      # rPi5: https://github.com/blakeblackshear/frigate/discussions/18431
-      # hwaccel_args: -hwaccel drm
       output_args:
+        # record video + audio
         record: preset-record-generic-audio-copy
       inputs:
-        - path: rtsp://127.0.0.1:8554/cam1_main
-          input_args: preset-rtsp-restream
+        # Use go2rtc restream
+        - path: rtsp://127.0.0.1:8554/hall_main
+          input_args: preset-rtsp-restream-low-latency
           roles:
             - record
-        - path: rtsp://127.0.0.1:8554/cam1_sub
-          input_args: preset-rtsp-restream
+        - path: rtsp://127.0.0.1:8554/hall_sub
+          input_args: preset-rtsp-restream-low-latency
           roles:
             - detect
             - audio
     live:
-      stream_name: cam1_sub
-
+      stream_name: hall_main
     detect:
       enabled: true
     objects:
       track:
         - person
         - cat
-
     record:
       enabled: true
     snapshots:
+      enabled: false
+      timestamp: true
+    # This setting will only affect snapshots:
+    timestamp_style:
+      position: tl
+      format: '%d.%m.%Y %H:%M:%S'
+    audio:
       enabled: true
 
-    # audio:
-    #   enabled: True
-    #   min_volume: 1000
-
-    # motion: {}
-
-  cam_ext:
+  door:
     enabled: true
     ffmpeg:
       output_args:
+        # record video + audio
         record: preset-record-generic-audio-copy
       inputs:
-        - path: "rtsp://admin:{FRIGATE_RTSP2_PASSWORD}@192.168.1.200:554/cam/realmonitor?channel=1&subtype=0"
-        # - path: rtsp://127.0.0.1:8554/cam_ext_main
-          input_args: preset-rtsp-restream
+        - path: rtsp://127.0.0.1:8554/door_main
+          input_args: preset-rtsp-restream-low-latency
           roles:
             - record
-        - path: "rtsp://admin:$FRIGATE_RTSP2_PASSWORD@192.168.1.200:554/cam/realmonitor?channel=1&subtype=1"
-        # - path: rtsp://127.0.0.1:8554/cam_ext_sub
-          input_args: preset-rtsp-restream
+        - path: rtsp://127.0.0.1:8554/door_sub
+          input_args: preset-rtsp-restream-low-latency
           roles:
             - detect
             - audio
     live:
-      stream_name: cam_ext_main
-
+      stream_name: door_main
     detect:
       enabled: true
     objects:
@@ -131,10 +151,71 @@ cameras:
         - person
         - cat
         - dog
-
     record:
       enabled: true
     snapshots:
+      enabled: false
+    audio:
       enabled: true
+    # Add motion mask to mask camera-provided timestamp overlay, for example
+    # Use Web UI to configure visually
+    motion:
+      mask: 0,0.039,0.403,0.039,0.403,0,0,0
 
-# version: 0.14
+  dome1:
+    enabled: true
+    ffmpeg:
+      inputs:
+        - path: rtsp://127.0.0.1:8554/dome1_main
+          input_args: preset-rtsp-restream-low-latency
+          roles:
+            - record
+        - path: rtsp://127.0.0.1:8554/dome1_sub
+          input_args: preset-rtsp-restream-low-latency
+          roles:
+            - detect
+            - audio
+    live:
+      stream_name: dome1_main
+    detect:
+      enabled: true
+    objects:
+      track:
+        - person
+        - cat
+    record:
+      enabled: true
+    snapshots:
+      enabled: false
+    motion:
+      mask: 0,0.048,0.278,0.048,0.278,0,0,0
+
+  dome2:
+    enabled: false
+    ffmpeg:
+      inputs:
+        - path: rtsp://127.0.0.1:8554/dome2_main
+          input_args: preset-rtsp-restream-low-latency
+          roles:
+            - record
+        - path: rtsp://127.0.0.1:8554/dome2_sub
+          input_args: preset-rtsp-restream-low-latency
+          roles:
+            - detect
+            - audio
+    live:
+      stream_name: dome2_main
+    detect:
+      enabled: true
+    objects:
+      track:
+        - person
+        - cat
+    record:
+      enabled: true
+    snapshots:
+      enabled: false
+    motion:
+      mask: 0,0.039,0.403,0.039,0.403,0,0,0
+
+version: 0.15-1

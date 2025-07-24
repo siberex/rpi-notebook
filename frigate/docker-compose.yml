@@ -1,23 +1,22 @@
 services:
   frigate:
     container_name: frigate
-    # privileged: true
+    # required for network_bandwidth telemetry
     cap_add:
       - NET_ADMIN
       - NET_RAW
     restart: unless-stopped
     image: ghcr.io/blakeblackshear/frigate:stable
-    shm_size: "128mb"
+    shm_size: "512mb" # 128mb is a minimum
     devices:
       - /dev/apex_0:/dev/apex_0 # Coral
-      - /dev/apex_1:/dev/apex_1 # Coral
+      - /dev/apex_1:/dev/apex_1 # Coral Dual TPU
       # - /dev/hailo0 # Hailo-8L
       # - /dev/video11:/dev/video11 # HW-accelerated decoding for rPi4
       - /dev/video19:/dev/video19 # HW-accelerated decoding for rPi5
       - /dev/media0:/dev/media0
       - /dev/media1:/dev/media1
-      - /dev/media2:/dev/media2
-      - /dev/media3:/dev/media3 # HW-accelerated decoding for rPi5
+      - /dev/media2:/dev/media2 # HW-accelerated decoding for rPi5
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ./config:/config
@@ -27,16 +26,20 @@ services:
         tmpfs:
           size: 1000000000
     ports:
-      # - "5000:5000" # !!! Unauthenticated UI and API access !!!
-      - "8971:8971"
+      - "8971:8971" # Web UI
       - "8554:8554" # RTSP feeds
       - "8555:8555/tcp" # WebRTC over tcp
       - "8555:8555/udp" # WebRTC over udp
     environment:
       # Restream usage:
-      # rtsp://admin:${FRIGATE_RESTREAM_PASSWORD}@127.0.0.1:8554/cam1_main
-      FRIGATE_RESTREAM_PASSWORD: "one_ring_to_rule_them_all"
-      FRIGATE_RTSP1_PASSWORD: "password1"
-      FRIGATE_RTSP2_PASSWORD: "password2"
-      # tailscale ip -4
-      FRIGATE_IP_WEBRTC: 100.100.200.200
+      # ffprobe -hide_banner -rtsp_transport tcp "rtsp://admin:${RTSP_PW_RESTREAM}@local.sib.li:8554/door_main"
+      - FRIGATE_RESTREAM_PASSWORD=${RTSP_PW_RESTREAM}
+      # Note: If you want to use env substitutions, related envs should start with FRIGATE_
+      # https://github.com/blakeblackshear/frigate/blob/0c92c3ccfa9bf3da2c5145c40f24c59d46e0921b/docker/main/rootfs/usr/local/go2rtc/create_config.py#L25C74-L25C82
+      - FRIGATE_PW_HALL=${RTSP_PW_HALL}
+      - FRIGATE_PW_DOOR=${RTSP_PW_DOOR}
+      - FRIGATE_PW_DOME1=${RTSP_PW_DOME1}
+      - FRIGATE_PW_DOME2=${RTSP_PW_DOME2}
+      - FRIGATE_PW_DOME3=${RTSP_PW_DOME3}
+      # export TAILSCALE_IP=`tailscale ip -4`
+      - FRIGATE_IP_WEBRTC=${TAILSCALE_IP}
