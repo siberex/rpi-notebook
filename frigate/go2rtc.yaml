@@ -1,0 +1,38 @@
+# https://github.com/AlexxIT/go2rtc/blob/master/internal/app/README.md
+
+#api:
+#  listen: "127.0.0.1:1984" # bind to localhost, do not expose on all interfaces
+ffmpeg:
+  hwaccel_args: "-hwaccel drm"
+rtsp:
+  # listen: "127.0.0.1:8554" # bind to localhost
+  listen: ":9554"
+  # default_query: video=all&audio=all
+  username: admin
+  password: ${RTSP_PW_RESTREAM}
+streams:
+  hall_main:
+    - ffmpeg:rtsp://admin:${RTSP_PW_HALL}@10.0.0.2:554/Preview_01_main#video=h264#audio=copy#rotate=270
+  hall_sub:
+    - ffmpeg:rtsp://admin:${RTSP_PW_HALL}@10.0.0.2:554/Preview_01_sub#video=h264#audio=copy#rotate=270#hardware#hwaccel_args
+
+  door_main:
+    - rtsp://admin:${RTSP_PW_DOOR}@10.0.0.3:554/cam/realmonitor?channel=1&subtype=0
+  door_sub:
+    - rtsp://admin:${RTSP_PW_DOOR}@10.0.0.3:554/cam/realmonitor?channel=1&subtype=1
+
+  dome1_main:
+    - rtsp://admin:${RTSP_PW_DOME1}@10.0.0.5:554/cam/realmonitor?channel=1&subtype=0
+  dome1_sub:
+    - rtsp://admin:${RTSP_PW_DOME1}@10.0.0.5:554/cam/realmonitor?channel=1&subtype=1
+
+  # dome2_main:
+  #   - ffmpeg:rtsp://admin:${RTSP_PW_DOME2}@10.0.0.4:554/cam/realmonitor?channel=1&subtype=0
+  # dome2_sub:
+  #   - ffmpeg:rtsp://admin:${RTSP_PW_DOME2}@10.0.0.4:554/cam/realmonitor?channel=1&subtype=1
+
+webrtc:
+  candidates:
+    # Bind specific ip for WebRTC
+    # export TAILSCALE_IP=`tailscale ip -4`
+    - ${TAILSCALE_IP}:8555

@@ -60,7 +60,7 @@ go2rtc:
   rtsp:
     # default_query: video=all&audio=all
     username: admin
-    password: '{FRIGATE_RESTREAM_PASSWORD}'
+    password: ${{FRIGATE_RESTREAM_PASSWORD}}
   streams:
     hall_main:
       # DO NOT use quotes!
@@ -82,11 +82,11 @@ go2rtc:
     #   - ffmpeg:rtsp://admin:${{FRIGATE_PW_DOME2}}@10.0.0.4:554/cam/realmonitor?channel=1&subtype=0
     # dome2_sub:
     #   - ffmpeg:rtsp://admin:${{FRIGATE_PW_DOME2}}@10.0.0.4:554/cam/realmonitor?channel=1&subtype=1
-
   webrtc:
     candidates:
       # Bind specific ip for WebRTC
-      - '{FRIGATE_IP_WEBRTC}:8555'
+      # Note: Frigate env substitution will not affect this section
+      - ${FRIGATE_IP_WEBRTC}:8555
 
 cameras:
   hall:

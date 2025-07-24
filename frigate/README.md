@@ -54,3 +54,47 @@ It will translate to `${FRIGATE_PW_DOME1}` in the `/dev/shm/go2rtc.yaml` and go2
 Note: If no environment variable is set, then the string will be used as-is.
 
 More on go2rtc configuration: https://github.com/AlexxIT/go2rtc/blob/master/internal/app/README.md
+
+Same with rtsp restream password, you could use either:
+
+```yaml
+go2rtc:
+  rtsp:
+    username: admin
+    password: {FRIGATE_RESTREAM_PASSWORD}
+```
+
+or:
+
+```yaml
+go2rtc:
+  rtsp:
+    username: admin
+    password: ${{FRIGATE_RESTREAM_PASSWORD}}
+```
+
+To check restream is working, use [VLC](https://www.videolan.org/vlc/) or ffprobe (assuming `docker-compose.yaml` exposes 8554 port from the frigate container):
+
+```bash
+ffprobe -hide_banner -rtsp_transport tcp "rtsp://admin:${RTSP_PW_RESTREAM}@127.0.0.1:8554/door_main"
+```
+
+For the WebRTC candidates list, use this:
+
+```yaml
+go2rtc:
+  webrtc:
+    candidates:
+      # Bind specific ip for WebRTC
+      - ${FRIGATE_IP_WEBRTC}:8555
+```
+
+At some point you will probably want to just run `go2rtc` outside of the frigate container and provide it's config manually.
+
+```bash
+mkdir go2rtc
+curl -L https://github.com/AlexxIT/go2rtc/releases/download/v1.9.9/go2rtc_linux_arm64 --output go2rtc
+chmod +x go2rtc
+touch go2rtc.yaml
+./go2rtc -d
+```
