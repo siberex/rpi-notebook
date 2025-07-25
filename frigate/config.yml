@@ -53,9 +53,9 @@ ffmpeg:
   # Set dtoverlay=vc4-kms-v3d-pi5,cma-512 in the /boot/firmware/config.txt
   hwaccel_args: -hwaccel drm
 
-birdseye:
-  enabled: true
-  mode: objects
+# birdseye:
+#   enabled: true
+#   mode: objects
 
 # See also: https://github.com/AlexxIT/go2rtc/blob/master/internal/app/README.md
 # docker exec -it frigate bash
@@ -66,22 +66,29 @@ go2rtc:
     username: admin
     password: ${{FRIGATE_RESTREAM_PASSWORD}}
   streams:
-    hall_main:
+    hall_main_raw:
       # DO NOT use quotes!
       # DO NOT use ${ENV}, use either {ENV} to substitute string from env with Frigate,
       # or ${{ENV}} to tell Frigate to skip substitution, so go2rtc will check env by itself.
       - rtsp://admin:{FRIGATE_PW_HALL}@10.0.0.2:554/Preview_01_main
-    hall_sub:
+    hall_main:
+      - "ffmpeg:hall_main_raw#video=h264#rotate=270#audio=copy#hardware"
+    hall_sub_raw:
       - rtsp://admin:{FRIGATE_PW_HALL}@10.0.0.2:554/Preview_01_sub
+    hall_sub:
+      - "ffmpeg:hall_sub_raw#video=h264#rotate=270#audio=copy#hardware"
+
     door_main:
       - rtsp://admin:{FRIGATE_PW_DOOR}@10.0.0.3:554/cam/realmonitor?channel=1&subtype=0
     door_sub:
       - rtsp://admin:{FRIGATE_PW_DOOR}@10.0.0.3:554/cam/realmonitor?channel=1&subtype=1
+
     dome1_main:
       # Skip Frigate string substitution and rely on the go2rtc env replacement
       - rtsp://admin:${{FRIGATE_PW_DOME1}}@10.0.0.5:554/cam/realmonitor?channel=1&subtype=0
     dome1_sub:
       - rtsp://admin:${{FRIGATE_PW_DOME1}}@10.0.0.5:554/cam/realmonitor?channel=1&subtype=1
+
     # dome2_main:
     #   - ffmpeg:rtsp://admin:${{FRIGATE_PW_DOME2}}@10.0.0.4:554/cam/realmonitor?channel=1&subtype=0
     # dome2_sub:
@@ -111,7 +118,10 @@ cameras:
             - detect
             - audio
     live:
-      stream_name: hall_main
+      streams:
+        hall_sub: hall_sub
+        # Note: it should be string
+        # height: "1280"
     objects:
       track:
         - person
@@ -145,7 +155,9 @@ cameras:
             - detect
             - audio
     live:
-      stream_name: door_main
+      streams:
+        door_main: door_main
+        # height: "1280"
     objects:
       track:
         - person
@@ -176,7 +188,8 @@ cameras:
             - detect
             - audio
     live:
-      stream_name: dome1_main
+      streams:
+        dome1_main: dome1_main
     objects:
       track:
         - person
@@ -202,7 +215,8 @@ cameras:
             - detect
             - audio
     live:
-      stream_name: dome2_main
+      streams:
+        dome2_main: dome2_main
     objects:
       track:
         - person
@@ -214,4 +228,4 @@ cameras:
     motion:
       mask: 0,0.039,0.403,0.039,0.403,0,0,0
 
-version: 0.15-1
+version: 0.16-0
