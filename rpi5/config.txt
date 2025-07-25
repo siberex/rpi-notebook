@@ -78,7 +78,9 @@ auto_initramfs=1
 
 # Enable DRM VC4 V3D driver
 # https://github.com/raspberrypi/linux/blob/fbd8b3facb36ce888b1cdcf5f45a78475a8208f2/arch/arm/boot/dts/overlays/README#L5119
-dtoverlay=vc4-kms-v3d-pi5
+# cma-512 is required for ffmpeg to work inside docker when `-hwaccel drm` flag used.
+# See also: https://github.com/blakeblackshear/frigate/discussions/18431#discussioncomment-13491765
+dtoverlay=vc4-kms-v3d-pi5,cma-512
 max_framebuffers=2
 
 # Don't have the firmware create an initial video= setting in cmdline.txt.

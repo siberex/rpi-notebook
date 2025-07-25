@@ -24,6 +24,9 @@ telemetry:
     intel_gpu_stats: false
     network_bandwidth: true
 
+detect:
+  enabled: true
+
 record:
   enabled: true
   alerts:
@@ -47,6 +50,7 @@ ffmpeg:
   # all presets: https://github.com/blakeblackshear/frigate/blob/master/frigate/ffmpeg_presets.py
   # hwaccel_args: preset-rpi-64-h265
   # rPi5: https://github.com/blakeblackshear/frigate/discussions/18431
+  # Set dtoverlay=vc4-kms-v3d-pi5,cma-512 in the /boot/firmware/config.txt
   hwaccel_args: -hwaccel drm
 
 birdseye:
@@ -94,7 +98,7 @@ cameras:
     ffmpeg:
       output_args:
         # record video + audio
-        record: preset-record-generic-audio-copy
+        record: preset-record-generic-audio-aac
       inputs:
         # Use go2rtc restream
         - path: rtsp://127.0.0.1:8554/hall_main
@@ -108,8 +112,6 @@ cameras:
             - audio
     live:
       stream_name: hall_main
-    detect:
-      enabled: true
     objects:
       track:
         - person
@@ -131,7 +133,7 @@ cameras:
     ffmpeg:
       output_args:
         # record video + audio
-        record: preset-record-generic-audio-copy
+        record: preset-record-generic-audio-aac
       inputs:
         - path: rtsp://127.0.0.1:8554/door_main
           input_args: preset-rtsp-restream-low-latency
@@ -144,8 +146,6 @@ cameras:
             - audio
     live:
       stream_name: door_main
-    detect:
-      enabled: true
     objects:
       track:
         - person
@@ -177,8 +177,6 @@ cameras:
             - audio
     live:
       stream_name: dome1_main
-    detect:
-      enabled: true
     objects:
       track:
         - person
@@ -205,8 +203,6 @@ cameras:
             - audio
     live:
       stream_name: dome2_main
-    detect:
-      enabled: true
     objects:
       track:
         - person
