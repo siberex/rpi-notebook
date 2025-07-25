@@ -118,10 +118,9 @@ cameras:
             - detect
             - audio
     live:
+      height: 1280
       streams:
         hall_sub: hall_sub
-        # Note: it should be string
-        # height: "1280"
     objects:
       track:
         - person
@@ -155,9 +154,9 @@ cameras:
             - detect
             - audio
     live:
+      height: 1280
       streams:
         door_main: door_main
-        # height: "1280"
     objects:
       track:
         - person
