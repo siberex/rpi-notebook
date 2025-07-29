@@ -61,31 +61,7 @@ watch -c -b -n 1 -- "vcgencmd pmic_read_adc | grep EXT5V_V"
 ```
 
 
-### [Bootlopader config](https://www.raspberrypi.com/documentation/computers/raspberry-pi.html#raspberry-pi-bootloader-configuration)
-
-rPi4 and rPi5:
-
-```conf
-# sudo rpi-eeprom-config --edit
-[all]
-BOOT_UART=1
-
-# https://www.raspberrypi.com/documentation/computers/raspberry-pi.html#decrease-raspberry-pi-5-wattage-when-turned-off
-WAKE_ON_GPIO=0
-POWER_OFF_ON_HALT=1
-# Disable HDMI boot diagnostics display
-DISABLE_HDMI=1
-
-# When powered from PoE, Pi 5 only:
-PSU_MAX_CURRENT=5000
-
-BOOT_ORDER=0xf164
-```
-
-
-### Bootloader update
-
-TODO
+### [Bootloader config](./rpi-eeprom-config.md)
 
 
 ## rPi5 additional config options

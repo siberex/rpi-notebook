@@ -16,9 +16,12 @@
 # SPI interface enable:
 #dtparam=spi=on
 
+# Specific to rPi5
+# https://www.raspberrypi.com/documentation/computers/raspberry-pi.html#differences-on-raspberry-pi-5
 usb_max_current_enable=1
 
-# RTC battery enable
+# RTC battery charging enable
+# https://www.raspberrypi.com/documentation/computers/raspberry-pi.html#enable-battery-charging
 dtparam=rtc_bbat_vchg=3000000
 
 # Enable Type C port host mode
@@ -36,23 +39,23 @@ ignore_lcd=1
 # rPi5 FAN settings
 # See also: https://github.com/raspberrypi/firmware/blob/4558d93090658fe288d00bc7c5a1553454c012a2/boot/overlays/README#L271
 
-# 50 deg, 20% speed
-dtparam=fan_temp0=50000
+# 52°C, 20% FAN speed (50/255)
+dtparam=fan_temp0=52000
 dtparam=fan_temp0_hyst=2500
 dtparam=fan_temp0_speed=50
 
-# 55 deg, 60% speed
-dtparam=fan_temp1=55000
+# 57°C, 60% speed
+dtparam=fan_temp1=57000
 dtparam=fan_temp1_hyst=2500
 dtparam=fan_temp1_speed=150
 
-# 100%
-dtparam=fan_temp2=60000
+# 62°C, 80%
+dtparam=fan_temp2=62000
 dtparam=fan_temp2_hyst=2500
-dtparam=fan_temp2_speed=255
+dtparam=fan_temp2_speed=204
 
-# 100%
-dtparam=fan_temp3=65000
+# 67°C, 100%
+dtparam=fan_temp3=67000
 dtparam=fan_temp3_hyst=2500
 dtparam=fan_temp3_speed=255
 
