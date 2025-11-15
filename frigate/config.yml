@@ -66,22 +66,20 @@ go2rtc:
     username: admin
     password: ${{FRIGATE_RESTREAM_PASSWORD}}
   streams:
-    hall_main_raw:
+    hall_main:
       # DO NOT use quotes!
       # DO NOT use ${ENV}, use either {ENV} to substitute string from env with Frigate,
       # or ${{ENV}} to tell Frigate to skip substitution, so go2rtc will check env by itself.
-      - rtsp://admin:{FRIGATE_PW_HALL}@10.0.0.2:554/Preview_01_main
-    hall_main:
-      - "ffmpeg:hall_main_raw#video=h264#rotate=270#audio=copy#hardware"
+      - rtsp://admin:${{FRIGATE_PW_HALL}}@10.0.0.2:554/Preview_01_main
     hall_sub_raw:
-      - rtsp://admin:{FRIGATE_PW_HALL}@10.0.0.2:554/Preview_01_sub
+      - rtsp://admin:${{FRIGATE_PW_HALL}}@10.0.0.2:554/Preview_01_sub
     hall_sub:
-      - "ffmpeg:hall_sub_raw#video=h264#rotate=270#audio=copy#hardware"
+      - ffmpeg:hall_sub_raw#video=h264#rotate=270#audio=copy#hardware
 
     door_main:
-      - rtsp://admin:{FRIGATE_PW_DOOR}@10.0.0.3:554/cam/realmonitor?channel=1&subtype=0
+      - rtsp://admin:${{FRIGATE_PW_DOOR}}@10.0.0.3:554/cam/realmonitor?channel=1&subtype=0
     door_sub:
-      - rtsp://admin:{FRIGATE_PW_DOOR}@10.0.0.3:554/cam/realmonitor?channel=1&subtype=1
+      - rtsp://admin:${{FRIGATE_PW_DOOR}}@10.0.0.3:554/cam/realmonitor?channel=1&subtype=1
 
     dome1_main:
       # Skip Frigate string substitution and rely on the go2rtc env replacement
@@ -89,10 +87,16 @@ go2rtc:
     dome1_sub:
       - rtsp://admin:${{FRIGATE_PW_DOME1}}@10.0.0.5:554/cam/realmonitor?channel=1&subtype=1
 
-    # dome2_main:
-    #   - ffmpeg:rtsp://admin:${{FRIGATE_PW_DOME2}}@10.0.0.4:554/cam/realmonitor?channel=1&subtype=0
-    # dome2_sub:
-    #   - ffmpeg:rtsp://admin:${{FRIGATE_PW_DOME2}}@10.0.0.4:554/cam/realmonitor?channel=1&subtype=1
+    dome2_main:
+      - ffmpeg:rtsp://admin:${{FRIGATE_PW_DOME2}}@10.0.0.4:554/cam/realmonitor?channel=1&subtype=0
+    dome2_sub:
+      - ffmpeg:rtsp://admin:${{FRIGATE_PW_DOME2}}@10.0.0.4:554/cam/realmonitor?channel=1&subtype=1
+
+    dome3_main:
+      - rtsp://admin:${{FRIGATE_PW_DOME3}}@10.0.0.6:554/cam/realmonitor?channel=1&subtype=0
+    dome3_sub:
+      - rtsp://admin:${{FRIGATE_PW_DOME3}}@10.0.0.6:554/cam/realmonitor?channel=1&subtype=1
+
   webrtc:
     candidates:
       # Bind specific ip for WebRTC
@@ -137,6 +141,10 @@ cameras:
     audio:
       enabled: true
 
+    motion:
+      threshold: 15
+      contour_area: 10
+      improve_contrast: true
   door:
     enabled: true
     ffmpeg:
@@ -173,6 +181,9 @@ cameras:
     motion:
       mask: 0,0.039,0.403,0.039,0.403,0,0,0
 
+      threshold: 5
+      contour_area: 10
+      improve_contrast: true
   dome1:
     enabled: true
     ffmpeg:
@@ -198,10 +209,13 @@ cameras:
     snapshots:
       enabled: false
     motion:
-      mask: 0,0.048,0.278,0.048,0.278,0,0,0
+      mask: 0.273,0.048,0.551,0.048,0.551,0,0.273,0
 
+      threshold: 5
+      contour_area: 10
+      improve_contrast: true
   dome2:
-    enabled: false
+    enabled: true
     ffmpeg:
       inputs:
         - path: rtsp://127.0.0.1:8554/dome2_main
@@ -214,6 +228,7 @@ cameras:
             - detect
             - audio
     live:
+      height: 1280
       streams:
         dome2_main: dome2_main
     objects:
@@ -225,6 +240,39 @@ cameras:
     snapshots:
       enabled: false
     motion:
-      mask: 0,0.039,0.403,0.039,0.403,0,0,0
+      mask: 0.709,0.046,1,0.048,1,0,0.709,0
 
+      threshold: 20
+      contour_area: 10
+      improve_contrast: true
+  dome3:
+    enabled: true
+    ffmpeg:
+      inputs:
+        - path: rtsp://127.0.0.1:8554/dome3_main
+          input_args: preset-rtsp-restream-low-latency
+          roles:
+            - record
+        - path: rtsp://127.0.0.1:8554/dome3_sub
+          input_args: preset-rtsp-restream-low-latency
+          roles:
+            - detect
+            - audio
+    live:
+      streams:
+        dome3_main: dome3_main
+    objects:
+      track:
+        - person
+        - cat
+    record:
+      enabled: true
+    snapshots:
+      enabled: false
+    motion:
+      mask: 0,0.048,0.277,0.048,0.277,0,0,0
+
+      threshold: 20
+      contour_area: 10
+      improve_contrast: true
 version: 0.16-0
